@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>GRID // HACK</title>
+<link rel="stylesheet" href="/static/style.css" />
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+
+  <canvas id="rain"></canvas>
+
+  <!-- ===== SPLASH ===== -->
+  <section id="screen-splash" class="screen active">
+    <div class="mark">
+      <div class="mark-diamond"><span>G</span></div>
+      <h1>GRID<span class="accent">//</span>HACK</h1>
+      <p class="sub" id="splash-status">initializing terminal…</p>
+      <div class="progress"><div class="progress-fill" id="splash-fill"></div></div>
+    </div>
+  </section>
+
+  <!-- ===== HOME ===== -->
+  <section id="screen-home" class="screen">
+    <header class="topbar">
+      <div class="user">
+        <div class="avatar" id="avatar">?</div>
+        <div>
+          <div class="handle" id="handle">@guest</div>
+          <div class="muted">Grid Operator</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="dial-wrap">
+      <svg class="dial" viewBox="0 0 200 200">
+        <circle class="dial-track" cx="100" cy="100" r="88" />
+        <circle class="dial-fill" id="dial-fill" cx="100" cy="100" r="88" />
+      </svg>
+      <div class="dial-center">
+        <div class="dial-label">Best Score</div>
+        <div class="dial-value" id="best-score">0</div>
+        <div class="dial-sub">Local best, this device</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-play">Start Hack</button>
+
+    <div class="rules-card">
+      <h3>How it works</h3>
+      <ul>
+        <li>A target symbol appears at the top of the grid.</li>
+        <li>Tap the matching symbol before it scrolls off screen.</li>
+        <li>Miss three, and the trace is lost.</li>
+      </ul>
+      <p class="fine">Just a reflex game. No points here convert to anything outside this app.</p>
+    </div>
+  </section>
+
+  <!-- ===== GAME ===== -->
+  <section id="screen-game" class="screen">
+    <header class="game-hud">
+      <button class="icon-btn" id="btn-quit">←</button>
+      <div class="hud-stat"><span class="hud-label">Score</span><span id="hud-score">0</span></div>
+      <div class="hud-stat"><span class="hud-label">Traces</span><span id="hud-lives">●●●</span></div>
+    </header>
+
+    <div class="target-bar">
+      <span class="muted">Find:</span>
+      <span id="target-glyph" class="target-glyph">A</span>
+    </div>
+
+    <div id="grid" class="grid"></div>
+  </section>
+
+  <!-- ===== RESULT ===== -->
+  <section id="screen-result" class="screen">
+    <div class="result-card">
+      <p class="muted">Session complete</p>
+      <div class="result-score" id="result-score">0</div>
+      <p id="result-note" class="fine"></p>
+      <button class="btn btn-primary" id="btn-again">Hack Again</button>
+      <button class="btn btn-ghost" id="btn-home">Back to Home</button>
+    </div>
+  </section>
+
+  <nav class="tabbar">
+    <button class="tab active" data-screen="screen-home">Home</button>
+    <button class="tab" data-screen="screen-game" id="tab-play">Play</button>
+    <button class="tab" data-screen="screen-board">Board</button>
+  </nav>
+
+  <!-- ===== LEADERBOARD ===== -->
+  <section id="screen-board" class="screen">
+    <header class="topbar"><h2>Top Operators</h2></header>
+    <ol class="board-list" id="board-list">
+      <li class="muted">Loading…</li>
+    </ol>
+  </section>
+
+  <script src="/static/game.js"></script>
+</body>
+</html>

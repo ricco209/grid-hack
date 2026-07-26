@@ -1,0 +1,59 @@
+"""
+GRID // HACK — Telegram bot launcher
+Uses python-telegram-bot 13.x (synchronous API), which supports
+Python 3.7+ including 3.8.10 — no asyncio/Node.js required.
+
+Set these two environment variables before running:
+  BOT_TOKEN   - token from @BotFather
+  WEBAPP_URL  - your deployed URL, e.g. https://your-app.onrender.com
+"""
+
+import os
+import logging
+
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+from telegram.ext import Updater, CommandHandler, CallbackContext
+from telegram import Update
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+log = logging.getLogger(__name__)
+
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
+WEBAPP_URL = os.environ.get("WEBAPP_URL", "https://your-app.onrender.com")
+
+
+def start(update: Update, context: CallbackContext):
+    keyboard = InlineKeyboardMarkup(
+        [[InlineKeyboardButton("Open GRID // HACK", web_app=WebAppInfo(url=WEBAPP_URL))]]
+    )
+    update.message.reply_text(
+        "GRID // HACK\n\n"
+        "A short reflex game: tap the matching symbol before it scrolls "
+        "off the grid. Just for fun — scores stay in the app.",
+        reply_markup=keyboard,
+    )
+
+
+def help_cmd(update: Update, context: CallbackContext):
+    update.message.reply_text("/start — open the game\n/help — this message")
+
+
+def main():
+    if not BOT_TOKEN:
+        raise SystemExit("Set the BOT_TOKEN environment variable first.")
+
+    updater = Updater(token=BOT_TOKEN, use_context=True)
+    dp = updater.dispatcher
+
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(CommandHandler("help", help_cmd))
+
+    log.info("Bot polling started.")
+    updater.start_polling()
+    updater.idle()
+
+
+if __name__ == "__main__":
+    main()
