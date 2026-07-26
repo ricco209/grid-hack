@@ -20,7 +20,7 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "8638656095:AAGettXVDqPbnqrhKuM0fTw5US0GcNlWTL4")
 WEBAPP_URL = os.environ.get("WEBAPP_URL", "https://your-app.onrender.com")
 
 
