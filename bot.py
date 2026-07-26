@@ -20,7 +20,7 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "8959333734:AAHFxRXEHljJXc7SkyQEU6jtE--tehzsJ-0")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "8931901950:AAGS455ThCFk61Nj9DN4C8gLI19BfDblmFc")
 WEBAPP_URL = os.environ.get("WEBAPP_URL", "https://grid-hack.onrender.com")
 
 
