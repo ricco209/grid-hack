@@ -30,8 +30,8 @@ def start(update: Update, context: CallbackContext):
     )
     update.message.reply_text(
         "GRID // HACK\n\n"
-        "A short reflex game: tap the matching symbol before it scrolls "
-        "off the grid. Just for fun — scores stay in the app.",
+        "Небольшое мини-приложение: заходи, чтобы увидеть приветствие "
+        "и получить случайный факт.",
         reply_markup=keyboard,
     )
 

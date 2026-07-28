@@ -1,104 +1,385 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>GRID // HACK</title>
-<link rel="stylesheet" href="/static/style.css" />
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal-1: #35C6C1;
+    --teal-2: #1FA8A3;
+    --teal-deep: #10827E;
+    --coral: #FF9466;
+    --coral-dark: #E97A4C;
+    --cream: #FBF6EC;
+    --ink: #2A4F4D;
+    --ink-soft: #5C7C7A;
+  }
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html,body{
+    margin:0; padding:0; height:100%; overflow:hidden;
+    font-family:'Nunito', sans-serif;
+    background: var(--teal-1);
+  }
+  #app{ position:relative; width:100%; height:100vh; }
+
+  /* ---------- LOADING SCREEN ---------- */
+  #loading{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(255,255,255,0.10), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(255,255,255,0.08), transparent 45%),
+      linear-gradient(160deg, var(--teal-1), var(--teal-2) 60%, var(--teal-deep));
+    background-image:
+      radial-gradient(circle at 20% 15%, rgba(255,255,255,0.10), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(255,255,255,0.08), transparent 45%),
+      linear-gradient(160deg, var(--teal-1), var(--teal-2) 60%, var(--teal-deep)),
+      radial-gradient(rgba(255,255,255,0.16) 1px, transparent 1px);
+    background-size: auto, auto, auto, 26px 26px;
+    background-position: 0 0, 0 0, 0 0, 0 0;
+    transition: opacity .5s ease, visibility .5s ease;
+    z-index:5;
+  }
+  #loading.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+
+  .mascot{
+    animation: bob 2.6s ease-in-out infinite;
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,0.18));
+  }
+  @keyframes bob{
+    0%,100%{ transform: translateY(0) rotate(-1.5deg); }
+    50%{ transform: translateY(-10px) rotate(1.5deg); }
+  }
+  .antenna-dot{ animation: blink 1.4s ease-in-out infinite; }
+  @keyframes blink{ 0%,100%{ opacity:1; } 50%{ opacity:.25; } }
+
+  .title{
+    margin-top: 18px;
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: 38px;
+    letter-spacing: 1px;
+    color:#fff;
+    text-shadow: 0 3px 0 rgba(0,60,58,0.35);
+  }
+  .subtitle{
+    margin-top: 2px;
+    font-weight:700;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.75);
+    text-transform: uppercase;
+  }
+
+  .wave-wrap{ margin-top: 26px; width: 180px; height: 34px; }
+  .wave-path{
+    stroke: var(--coral);
+    stroke-width: 6;
+    stroke-linecap: round;
+    fill: none;
+    stroke-dasharray: 140 400;
+    stroke-dashoffset: 0;
+    animation: travel 1.4s linear infinite;
+  }
+  @keyframes travel{
+    from{ stroke-dashoffset: 0; }
+    to{ stroke-dashoffset: -540; }
+  }
+
+  .loading-label{
+    margin-top: 14px;
+    font-weight:700;
+    font-size: 14px;
+    color: rgba(255,255,255,0.9);
+  }
+  .loading-label::after{
+    content:'';
+    display:inline-block;
+    width: 1.2em;
+    text-align:left;
+    animation: dots 1.2s steps(4) infinite;
+  }
+  @keyframes dots{
+    0%{ content:''; }
+    25%{ content:'.'; }
+    50%{ content:'..'; }
+    75%{ content:'...'; }
+  }
+
+  .progress-track{
+    position:absolute; left:50%; bottom: 38px; transform: translateX(-50%);
+    width: 150px; height: 5px; border-radius: 4px;
+    background: rgba(255,255,255,0.28);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%; width:0%;
+    background: #fff;
+    border-radius: 4px;
+    transition: width .25s ease;
+  }
+
+  /* ---------- MAIN SCREEN ---------- */
+  #main{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    background: var(--cream);
+    opacity:0; transform: translateY(14px);
+    transition: opacity .5s ease, transform .5s ease;
+    overflow-y:auto;
+  }
+  #main.show{ opacity:1; transform: translateY(0); }
+
+  .hero{
+    background: linear-gradient(160deg, var(--teal-1), var(--teal-2));
+    padding: 34px 22px 46px;
+    border-radius: 0 0 32px 32px;
+    position:relative;
+    box-shadow: 0 8px 20px rgba(16,130,126,0.18);
+  }
+  .hero-eyebrow{
+    color: rgba(255,255,255,0.75);
+    font-weight:800; font-size: 11px; letter-spacing:3px; text-transform:uppercase;
+  }
+  .hero-greeting{
+    font-family:'Baloo 2', sans-serif;
+    color:#fff; font-weight:700; font-size: 26px; margin-top:6px;
+    text-shadow: 0 2px 0 rgba(0,60,58,0.25);
+  }
+  .hero-date{
+    color: rgba(255,255,255,0.85);
+    font-weight:600; font-size: 13px; margin-top: 4px; text-transform:capitalize;
+  }
+  .hero-mascot{ position:absolute; right:18px; top:20px; width:54px; height:54px; }
+
+  .content{ padding: 22px; flex:1; }
+
+  .card{
+    background:#fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 6px 18px rgba(42,79,77,0.08);
+    border: 1px solid rgba(42,79,77,0.06);
+  }
+  .card + .card{ margin-top: 16px; }
+  .card-label{
+    font-weight:800; font-size:11px; letter-spacing:2px; text-transform:uppercase;
+    color: var(--ink-soft);
+  }
+  .fact-text{
+    margin-top: 8px;
+    font-weight:700; font-size: 16px; line-height:1.45;
+    color: var(--ink);
+    min-height: 44px;
+    transition: opacity .15s ease;
+  }
+  .fact-meta{
+    margin-top:12px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .counter{ font-weight:700; font-size:12px; color: var(--ink-soft); }
+
+  .btn{
+    appearance:none; border:none; cursor:pointer;
+    background: var(--coral);
+    color:#fff; font-family:'Nunito', sans-serif; font-weight:800; font-size:14px;
+    padding: 13px 20px; border-radius:14px; width:100%;
+    box-shadow: 0 6px 14px rgba(233,122,76,0.35);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active{ transform: scale(0.97); box-shadow: 0 3px 8px rgba(233,122,76,0.30); }
+
+  .status-row{ display:flex; gap:10px; margin-top:16px; }
+  .status-chip{
+    flex:1; background: rgba(53,198,193,0.10);
+    border-radius: 14px; padding: 12px 10px; text-align:center;
+  }
+  .status-chip b{ display:block; font-family:'Baloo 2',sans-serif; font-size:18px; color: var(--teal-deep); }
+  .status-chip span{ font-size:10px; font-weight:700; letter-spacing:1px; color: var(--ink-soft); text-transform:uppercase; }
+
+  .footnote{
+    text-align:center; margin-top: 18px; padding-bottom: 8px;
+    font-size:11px; color: var(--ink-soft); font-weight:600;
+  }
+</style>
 </head>
 <body>
+<div id="app">
 
-  <canvas id="rain"></canvas>
+  <!-- LOADING -->
+  <div id="loading">
+    <svg class="mascot" width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="64" y1="10" x2="64" y2="24" stroke="#2A4F4D" stroke-width="4" stroke-linecap="round"/>
+      <circle class="antenna-dot" cx="64" cy="8" r="6" fill="var(--coral)"/>
+      <rect x="18" y="24" width="92" height="86" rx="30" fill="#FBF6EC" stroke="#2A4F4D" stroke-width="4"/>
+      <rect x="30" y="54" width="30" height="20" rx="8" fill="#2A4F4D"/>
+      <rect x="68" y="54" width="30" height="20" rx="8" fill="#2A4F4D"/>
+      <line x1="60" y1="64" x2="68" y2="64" stroke="#2A4F4D" stroke-width="4"/>
+      <path d="M50 88 Q64 98 78 88" stroke="#2A4F4D" stroke-width="4" stroke-linecap="round" fill="none"/>
+    </svg>
 
-  <!-- ===== SPLASH ===== -->
-  <section id="screen-splash" class="screen active">
-    <div class="mark">
-      <div class="mark-diamond"><span>G</span></div>
-      <h1>GRID<span class="accent">//</span>HACK</h1>
-      <p class="sub" id="splash-status">initializing terminal…</p>
-      <div class="progress"><div class="progress-fill" id="splash-fill"></div></div>
+    <div class="title">GRID // HACK</div>
+    <div class="subtitle">connecting</div>
+
+    <div class="wave-wrap">
+      <svg viewBox="0 0 180 34" width="180" height="34">
+        <path class="wave-path" d="M0 17 Q 15 2, 30 17 T 60 17 T 90 17 T 120 17 T 150 17 T 180 17" />
+      </svg>
     </div>
-  </section>
 
-  <!-- ===== HOME ===== -->
-  <section id="screen-home" class="screen">
-    <header class="topbar">
-      <div class="user">
-        <div class="avatar" id="avatar">?</div>
-        <div>
-          <div class="handle" id="handle">@guest</div>
-          <div class="muted">Grid Operator</div>
+    <div class="loading-label">Загрузка</div>
+
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div class="hero">
+      <svg class="hero-mascot" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="18" y="24" width="92" height="86" rx="30" fill="#FBF6EC" stroke="#2A4F4D" stroke-width="4"/>
+        <rect x="30" y="54" width="30" height="20" rx="8" fill="#2A4F4D"/>
+        <rect x="68" y="54" width="30" height="20" rx="8" fill="#2A4F4D"/>
+        <line x1="60" y1="64" x2="68" y2="64" stroke="#2A4F4D" stroke-width="4"/>
+        <path d="M50 88 Q64 98 78 88" stroke="#2A4F4D" stroke-width="4" stroke-linecap="round" fill="none"/>
+      </svg>
+      <div class="hero-eyebrow">Grid // Hack</div>
+      <div class="hero-greeting" id="greeting">Привет!</div>
+      <div class="hero-date" id="dateLine"></div>
+    </div>
+
+    <div class="content">
+      <div class="card">
+        <div class="card-label">Факт дня</div>
+        <div class="fact-text" id="factText">Нажми кнопку, чтобы получить факт.</div>
+        <div class="fact-meta">
+          <span class="counter" id="counterLabel">Показано: 0</span>
         </div>
       </div>
-    </header>
 
-    <div class="dial-wrap">
-      <svg class="dial" viewBox="0 0 200 200">
-        <circle class="dial-track" cx="100" cy="100" r="88" />
-        <circle class="dial-fill" id="dial-fill" cx="100" cy="100" r="88" />
-      </svg>
-      <div class="dial-center">
-        <div class="dial-label">Best Score</div>
-        <div class="dial-value" id="best-score">0</div>
-        <div class="dial-sub">Local best, this device</div>
+      <div class="card">
+        <button class="btn" id="factBtn">Новый факт</button>
+        <div class="status-row">
+          <div class="status-chip">
+            <b id="localTime">--:--</b>
+            <span>Время</span>
+          </div>
+          <div class="status-chip">
+            <b id="userLabel">Гость</b>
+            <span>Профиль</span>
+          </div>
+        </div>
       </div>
+
+      <div class="footnote">GRID // HACK mini app</div>
     </div>
+  </div>
 
-    <button class="btn btn-primary" id="btn-play">Start Hack</button>
+</div>
 
-    <div class="rules-card">
-      <h3>How it works</h3>
-      <ul>
-        <li>A target symbol appears at the top of the grid.</li>
-        <li>Tap the matching symbol before it scrolls off screen.</li>
-        <li>Miss three, and the trace is lost.</li>
-      </ul>
-      <p class="fine">Just a reflex game. No points here convert to anything outside this app.</p>
-    </div>
-  </section>
+<script>
+(function(){
+  var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
 
-  <!-- ===== GAME ===== -->
-  <section id="screen-game" class="screen">
-    <header class="game-hud">
-      <button class="icon-btn" id="btn-quit">←</button>
-      <div class="hud-stat"><span class="hud-label">Score</span><span id="hud-score">0</span></div>
-      <div class="hud-stat"><span class="hud-label">Traces</span><span id="hud-lives">●●●</span></div>
-    </header>
+  // ---- Loading progress animation ----
+  var fill = document.getElementById('progressFill');
+  var pct = 0;
+  var progressTimer = setInterval(function(){
+    pct += Math.random() * 18 + 6;
+    if (pct > 96) pct = 96;
+    fill.style.width = pct + '%';
+  }, 180);
 
-    <div class="target-bar">
-      <span class="muted">Find:</span>
-      <span id="target-glyph" class="target-glyph">A</span>
-    </div>
+  function finishLoading(){
+    clearInterval(progressTimer);
+    fill.style.width = '100%';
+    setTimeout(function(){
+      document.getElementById('loading').classList.add('hide');
+      document.getElementById('main').classList.add('show');
+    }, 350);
+  }
 
-    <div id="grid" class="grid"></div>
-  </section>
+  var MIN_LOADING_MS = 1600;
+  var start = Date.now();
+  function whenReady(){
+    var elapsed = Date.now() - start;
+    var wait = Math.max(0, MIN_LOADING_MS - elapsed);
+    setTimeout(finishLoading, wait);
+  }
+  if (document.readyState === 'complete') whenReady();
+  else window.addEventListener('load', whenReady);
 
-  <!-- ===== RESULT ===== -->
-  <section id="screen-result" class="screen">
-    <div class="result-card">
-      <p class="muted">Session complete</p>
-      <div class="result-score" id="result-score">0</div>
-      <p id="result-note" class="fine"></p>
-      <button class="btn btn-primary" id="btn-again">Hack Again</button>
-      <button class="btn btn-ghost" id="btn-home">Back to Home</button>
-    </div>
-  </section>
+  // ---- Greeting / user info ----
+  var name = 'друг';
+  try {
+    var u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+    if (u && u.first_name) {
+      name = u.first_name;
+      document.getElementById('userLabel').textContent = u.first_name;
+    }
+  } catch(e){}
+  document.getElementById('greeting').textContent = 'Привет, ' + name + '!';
 
-  <nav class="tabbar">
-    <button class="tab active" data-screen="screen-home">Home</button>
-    <button class="tab" data-screen="screen-game" id="tab-play">Play</button>
-    <button class="tab" data-screen="screen-board">Board</button>
-  </nav>
+  var dateFmt = new Intl.DateTimeFormat('ru-RU', { day:'numeric', month:'long', weekday:'long' });
+  document.getElementById('dateLine').textContent = dateFmt.format(new Date());
 
-  <!-- ===== LEADERBOARD ===== -->
-  <section id="screen-board" class="screen">
-    <header class="topbar"><h2>Top Operators</h2></header>
-    <ol class="board-list" id="board-list">
-      <li class="muted">Loading…</li>
-    </ol>
-  </section>
+  function tickClock(){
+    var t = new Date();
+    var hh = String(t.getHours()).padStart(2,'0');
+    var mm = String(t.getMinutes()).padStart(2,'0');
+    document.getElementById('localTime').textContent = hh + ':' + mm;
+  }
+  tickClock();
+  setInterval(tickClock, 15000);
 
-  <script src="/static/game.js"></script>
+  // ---- Random fact functionality ----
+  var shownCount = 0;
+  try { shownCount = parseInt(localStorage.getItem('gh_fact_count') || '0', 10) || 0; } catch(e){}
+  document.getElementById('counterLabel').textContent = 'Показано: ' + shownCount;
+
+  var fallbackFacts = [
+    'Первый компьютерный «баг» был в буквальном смысле мотыльком, застрявшим в реле.',
+    'Пароль «123456» до сих пор входит в топ самых популярных в мире.',
+    'Клавиатура QWERTY была придумана, чтобы печатные машинки не заедали.',
+    'Первый домен в интернете был зарегистрирован в 1985 году.',
+    'Слово «robot» происходит от чешского слова «robota» — подневольный труд.'
+  ];
+  var fallbackIndex = 0;
+
+  document.getElementById('factBtn').addEventListener('click', function(){
+    var btn = this;
+    btn.disabled = true;
+    fetch('/api/fact')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        var text = (data && data.ok && data.fact) ? data.fact : nextFallback();
+        applyFact(text);
+      })
+      .catch(function(){ applyFact(nextFallback()); })
+      .finally(function(){ btn.disabled = false; });
+  });
+
+  function nextFallback(){
+    var f = fallbackFacts[fallbackIndex % fallbackFacts.length];
+    fallbackIndex++;
+    return f;
+  }
+
+  function applyFact(text){
+    var el = document.getElementById('factText');
+    el.style.opacity = 0;
+    setTimeout(function(){
+      el.textContent = text;
+      el.style.opacity = 1;
+    }, 150);
+    shownCount++;
+    document.getElementById('counterLabel').textContent = 'Показано: ' + shownCount;
+    try { localStorage.setItem('gh_fact_count', String(shownCount)); } catch(e){}
+  }
+})();
+</script>
 </body>
 </html>
