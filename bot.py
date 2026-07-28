@@ -56,4 +56,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main()git pull --rebase
+git pushgit pull --rebase
+git push

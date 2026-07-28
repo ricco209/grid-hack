@@ -3,382 +3,670 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>GRID // HACK</title>
+<title>Conut Beach</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --teal-1: #35C6C1;
-    --teal-2: #1FA8A3;
-    --teal-deep: #10827E;
-    --coral: #FF9466;
-    --coral-dark: #E97A4C;
-    --cream: #FBF6EC;
-    --ink: #2A4F4D;
-    --ink-soft: #5C7C7A;
+    --sky-top: #BFEAF4;
+    --sky-bottom: #6FD3DE;
+    --ocean-1: #3FBFC7;
+    --ocean-2: #2AA6AE;
+    --ocean-deep: #1C8F94;
+    --sand: #F5EDDC;
+    --sand-dark: #E7D9B8;
+    --shell-brown: #6B4226;
+    --shell-brown-dark: #4A2C17;
+    --coconut-cream: #F7EFDD;
+    --coral: #E8863B;
+    --coral-dark: #C96A26;
+    --gold: #F5B942;
+    --ink: #2E3A3A;
+    --ink-soft: #6B7A79;
+    --leaf: #2E9E63;
+    --leaf-dark: #1F7A4B;
+    --card-shadow: 0 8px 20px rgba(28,143,148,0.14);
   }
-  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html,body{
-    margin:0; padding:0; height:100%; overflow:hidden;
-    font-family:'Nunito', sans-serif;
-    background: var(--teal-1);
-  }
-  #app{ position:relative; width:100%; height:100vh; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; padding:0; height:100%; overflow:hidden; font-family:'Nunito',sans-serif; background:var(--sand); }
+  #root{ position:relative; width:100%; height:100vh; }
 
-  /* ---------- LOADING SCREEN ---------- */
+  /* =================== LOADING SCREEN =================== */
   #loading{
-    position:absolute; inset:0;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    background:
-      radial-gradient(circle at 20% 15%, rgba(255,255,255,0.10), transparent 40%),
-      radial-gradient(circle at 85% 80%, rgba(255,255,255,0.08), transparent 45%),
-      linear-gradient(160deg, var(--teal-1), var(--teal-2) 60%, var(--teal-deep));
-    background-image:
-      radial-gradient(circle at 20% 15%, rgba(255,255,255,0.10), transparent 40%),
-      radial-gradient(circle at 85% 80%, rgba(255,255,255,0.08), transparent 45%),
-      linear-gradient(160deg, var(--teal-1), var(--teal-2) 60%, var(--teal-deep)),
-      radial-gradient(rgba(255,255,255,0.16) 1px, transparent 1px);
-    background-size: auto, auto, auto, 26px 26px;
-    background-position: 0 0, 0 0, 0 0, 0 0;
-    transition: opacity .5s ease, visibility .5s ease;
-    z-index:5;
+    position:absolute; inset:0; overflow:hidden;
+    background:linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 42%, var(--ocean-1) 60%, var(--ocean-2) 100%);
+    transition:opacity .5s ease, visibility .5s ease;
+    z-index:20;
   }
   #loading.hide{ opacity:0; visibility:hidden; pointer-events:none; }
 
-  .mascot{
-    animation: bob 2.6s ease-in-out infinite;
-    filter: drop-shadow(0 10px 18px rgba(0,0,0,0.18));
-  }
-  @keyframes bob{
-    0%,100%{ transform: translateY(0) rotate(-1.5deg); }
-    50%{ transform: translateY(-10px) rotate(1.5deg); }
-  }
-  .antenna-dot{ animation: blink 1.4s ease-in-out infinite; }
-  @keyframes blink{ 0%,100%{ opacity:1; } 50%{ opacity:.25; } }
+  .cloud{ position:absolute; opacity:.8; }
+  .bird{ position:absolute; opacity:.55; animation: driftx 9s linear infinite; }
+  @keyframes driftx{ from{ transform:translateX(0);} to{ transform:translateX(-30px);} }
 
-  .title{
-    margin-top: 18px;
-    font-family:'Baloo 2', sans-serif;
-    font-weight:800;
-    font-size: 38px;
+  .palm-corner{ position:absolute; top:-8px; z-index:2; }
+  .palm-corner.left{ left:-18px; transform: scaleX(-1); }
+  .palm-corner.right{ right:-18px; }
+  .palm-sway{ animation: sway 4s ease-in-out infinite; transform-origin: 50% 92%; }
+  @keyframes sway{ 0%,100%{ transform:rotate(-2deg);} 50%{ transform:rotate(2deg);} }
+
+  .mascot-hero{
+    position:absolute; left:50%; top:36%; transform:translate(-50%,-50%);
+    animation: bob 2.6s ease-in-out infinite; z-index:5;
+  }
+  @keyframes bob{ 0%,100%{ transform:translate(-50%,-50%) rotate(-2deg);} 50%{ transform:translate(-50%,-46%) rotate(2deg);} }
+
+  .brand{
+    position:absolute; left:50%; top:56%; transform:translateX(-50%);
+    text-align:center; z-index:6; width:100%;
+  }
+  .brand-conut{
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:44px; color:#fff;
+    -webkit-text-stroke: 2px var(--shell-brown-dark);
+    text-shadow: 0 4px 0 var(--shell-brown-dark);
     letter-spacing: 1px;
-    color:#fff;
-    text-shadow: 0 3px 0 rgba(0,60,58,0.35);
   }
-  .subtitle{
-    margin-top: 2px;
-    font-weight:700;
-    font-size: 12px;
-    letter-spacing: 3px;
-    color: rgba(255,255,255,0.75);
-    text-transform: uppercase;
+  .brand-beach{
+    margin-top:-6px;
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:30px; color:var(--gold);
+    -webkit-text-stroke: 2px var(--shell-brown-dark);
+    text-shadow: 0 3px 0 var(--shell-brown-dark);
+    letter-spacing: 2px;
   }
 
-  .wave-wrap{ margin-top: 26px; width: 180px; height: 34px; }
-  .wave-path{
-    stroke: var(--coral);
-    stroke-width: 6;
-    stroke-linecap: round;
-    fill: none;
-    stroke-dasharray: 140 400;
-    stroke-dashoffset: 0;
-    animation: travel 1.4s linear infinite;
+  .wave-loader{ position:absolute; left:50%; top:68%; transform:translateX(-50%); width:170px; height:30px; z-index:6; }
+  .wave-loader path{
+    stroke:#fff; stroke-width:6; stroke-linecap:round; fill:none;
+    stroke-dasharray:130 380; animation: travel 1.3s linear infinite;
   }
-  @keyframes travel{
-    from{ stroke-dashoffset: 0; }
-    to{ stroke-dashoffset: -540; }
-  }
+  @keyframes travel{ from{ stroke-dashoffset:0;} to{ stroke-dashoffset:-510;} }
 
   .loading-label{
-    margin-top: 14px;
-    font-weight:700;
-    font-size: 14px;
-    color: rgba(255,255,255,0.9);
+    position:absolute; left:50%; top:75%; transform:translateX(-50%);
+    font-weight:800; font-size:15px; color:#fff; z-index:6;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.15);
   }
-  .loading-label::after{
-    content:'';
-    display:inline-block;
-    width: 1.2em;
-    text-align:left;
-    animation: dots 1.2s steps(4) infinite;
-  }
-  @keyframes dots{
-    0%{ content:''; }
-    25%{ content:'.'; }
-    50%{ content:'..'; }
-    75%{ content:'...'; }
-  }
+  .loading-label::after{ content:''; display:inline-block; width:1.1em; text-align:left; animation: dots 1.2s steps(4) infinite; }
+  @keyframes dots{ 0%{content:'';} 25%{content:'.';} 50%{content:'..';} 75%{content:'...';} }
+
+  .shore{ position:absolute; left:0; right:0; bottom:0; height:34%; z-index:4; }
+  .shore svg{ position:absolute; bottom:0; width:100%; height:100%; }
 
   .progress-track{
-    position:absolute; left:50%; bottom: 38px; transform: translateX(-50%);
-    width: 150px; height: 5px; border-radius: 4px;
-    background: rgba(255,255,255,0.28);
-    overflow:hidden;
+    position:absolute; left:50%; bottom:16px; transform:translateX(-50%); z-index:8;
+    width:130px; height:5px; border-radius:4px; background:rgba(255,255,255,0.35); overflow:hidden;
   }
-  .progress-fill{
-    height:100%; width:0%;
-    background: #fff;
-    border-radius: 4px;
-    transition: width .25s ease;
+  .progress-fill{ height:100%; width:0%; background:#fff; border-radius:4px; transition:width .25s ease; }
+
+  /* =================== APP SHELL =================== */
+  #app{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    background:var(--sand); opacity:0; transition:opacity .45s ease;
+  }
+  #app.show{ opacity:1; }
+
+  .screen{ display:none; flex-direction:column; flex:1; min-height:0; }
+  .screen.active{ display:flex; }
+  .scroll-area{ flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+
+  /* ---- Home header / hero ---- */
+  .hero-band{
+    position:relative; height:150px; overflow:hidden;
+    background:linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 55%, var(--ocean-1) 100%);
+  }
+  .hero-topbar{
+    position:absolute; top:0; left:0; right:0; z-index:5;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 16px 0;
+  }
+  .icon-btn{
+    width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.55);
+    display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;
+  }
+  .logo-mark{ text-align:center; line-height:1; }
+  .logo-conut{
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:17px; color:#fff;
+    -webkit-text-stroke: 1px var(--shell-brown-dark); letter-spacing:.5px;
+  }
+  .logo-beach{
+    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:15px; color:var(--gold);
+    -webkit-text-stroke: 1px var(--shell-brown-dark); letter-spacing:1px; margin-top:-4px;
   }
 
-  /* ---------- MAIN SCREEN ---------- */
-  #main{
-    position:absolute; inset:0;
-    display:flex; flex-direction:column;
-    background: var(--cream);
-    opacity:0; transform: translateY(14px);
-    transition: opacity .5s ease, transform .5s ease;
-    overflow-y:auto;
-  }
-  #main.show{ opacity:1; transform: translateY(0); }
+  .hero-scene{ position:absolute; inset:0; }
 
-  .hero{
-    background: linear-gradient(160deg, var(--teal-1), var(--teal-2));
-    padding: 34px 22px 46px;
-    border-radius: 0 0 32px 32px;
-    position:relative;
-    box-shadow: 0 8px 20px rgba(16,130,126,0.18);
-  }
-  .hero-eyebrow{
-    color: rgba(255,255,255,0.75);
-    font-weight:800; font-size: 11px; letter-spacing:3px; text-transform:uppercase;
-  }
-  .hero-greeting{
-    font-family:'Baloo 2', sans-serif;
-    color:#fff; font-weight:700; font-size: 26px; margin-top:6px;
-    text-shadow: 0 2px 0 rgba(0,60,58,0.25);
-  }
-  .hero-date{
-    color: rgba(255,255,255,0.85);
-    font-weight:600; font-size: 13px; margin-top: 4px; text-transform:capitalize;
-  }
-  .hero-mascot{ position:absolute; right:18px; top:20px; width:54px; height:54px; }
+  /* ---- Home content ---- */
+  .home-content{ padding:0 16px 90px; margin-top:-34px; position:relative; z-index:6; }
 
-  .content{ padding: 22px; flex:1; }
+  .greet-card{
+    background:#fff; border-radius:20px; padding:16px; box-shadow:var(--card-shadow);
+    display:flex; align-items:center; gap:12px;
+  }
+  .greet-text h3{ margin:0; font-family:'Baloo 2',sans-serif; font-size:18px; color:var(--ink); }
+  .greet-text p{ margin:4px 0 0; font-size:13px; color:var(--ink-soft); font-weight:600; }
+  .mini-mascot{ flex-shrink:0; }
 
-  .card{
-    background:#fff;
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: 0 6px 18px rgba(42,79,77,0.08);
-    border: 1px solid rgba(42,79,77,0.06);
+  .balance-card{
+    margin-top:14px; background:linear-gradient(135deg,var(--ocean-1),var(--ocean-deep));
+    border-radius:18px; padding:16px 18px; color:#fff; box-shadow:var(--card-shadow);
+    display:flex; align-items:center; justify-content:space-between; cursor:pointer;
   }
-  .card + .card{ margin-top: 16px; }
-  .card-label{
-    font-weight:800; font-size:11px; letter-spacing:2px; text-transform:uppercase;
-    color: var(--ink-soft);
-  }
-  .fact-text{
-    margin-top: 8px;
-    font-weight:700; font-size: 16px; line-height:1.45;
-    color: var(--ink);
-    min-height: 44px;
-    transition: opacity .15s ease;
-  }
-  .fact-meta{
-    margin-top:12px; display:flex; align-items:center; justify-content:space-between;
-  }
-  .counter{ font-weight:700; font-size:12px; color: var(--ink-soft); }
+  .balance-card .label{ font-size:12px; font-weight:700; opacity:.85; letter-spacing:.5px; }
+  .balance-card .amount{ margin-top:4px; font-family:'Baloo 2',sans-serif; font-size:24px; display:flex; align-items:center; gap:8px; }
+  .balance-card .amount span.unit{ font-size:13px; font-weight:700; opacity:.85; }
+  .chev{ opacity:.85; }
 
-  .btn{
-    appearance:none; border:none; cursor:pointer;
-    background: var(--coral);
-    color:#fff; font-family:'Nunito', sans-serif; font-weight:800; font-size:14px;
-    padding: 13px 20px; border-radius:14px; width:100%;
-    box-shadow: 0 6px 14px rgba(233,122,76,0.35);
-    transition: transform .12s ease, box-shadow .12s ease;
+  .quick-row{ margin-top:14px; display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .quick-item{
+    background:#fff; border-radius:16px; padding:12px 6px; text-align:center;
+    box-shadow:var(--card-shadow); border:none; cursor:pointer; font-family:'Nunito',sans-serif;
   }
-  .btn:active{ transform: scale(0.97); box-shadow: 0 3px 8px rgba(233,122,76,0.30); }
+  .quick-icon{
+    width:40px; height:40px; border-radius:50%; margin:0 auto 6px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .quick-icon.bonus{ background:#E4F6E9; }
+  .quick-icon.tasks{ background:#E4F1FB; }
+  .quick-icon.friends{ background:#FBE7EA; }
+  .quick-item span{ font-size:12px; font-weight:800; color:var(--ink); }
 
-  .status-row{ display:flex; gap:10px; margin-top:16px; }
-  .status-chip{
-    flex:1; background: rgba(53,198,193,0.10);
-    border-radius: 14px; padding: 12px 10px; text-align:center;
+  .reward-card{
+    margin-top:14px; background:#fff; border-radius:20px; padding:16px; box-shadow:var(--card-shadow);
+    display:flex; align-items:center; gap:12px;
   }
-  .status-chip b{ display:block; font-family:'Baloo 2',sans-serif; font-size:18px; color: var(--teal-deep); }
-  .status-chip span{ font-size:10px; font-weight:700; letter-spacing:1px; color: var(--ink-soft); text-transform:uppercase; }
+  .reward-text{ flex:1; }
+  .reward-text h4{ margin:0; font-family:'Baloo 2',sans-serif; font-size:16px; color:var(--ink); }
+  .reward-text p{ margin:4px 0 0; font-size:12.5px; color:var(--ink-soft); font-weight:600; }
 
-  .footnote{
-    text-align:center; margin-top: 18px; padding-bottom: 8px;
-    font-size:11px; color: var(--ink-soft); font-weight:600;
+  .claim-btn{
+    margin-top:14px; width:100%; border:none; border-radius:16px; padding:14px;
+    font-family:'Nunito',sans-serif; font-weight:800; font-size:15px; color:#fff; cursor:pointer;
+    background:linear-gradient(135deg,var(--ocean-1),var(--ocean-deep)); box-shadow:0 8px 16px rgba(28,143,148,0.30);
+    transition:transform .12s ease;
   }
+  .claim-btn:active{ transform:scale(.97); }
+  .claim-btn.done{ background:#D9D2C1; color:#8b8272; box-shadow:none; cursor:default; }
+
+  /* ---- Profile screen ---- */
+  .profile-hero{
+    position:relative; height:170px; overflow:hidden;
+    background:linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 55%, var(--ocean-1) 100%);
+  }
+  .profile-topbar{
+    position:absolute; top:0; left:0; right:0; z-index:5;
+    display:flex; align-items:center; justify-content:space-between; padding:12px 16px 0;
+  }
+  .profile-title{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:17px; color:var(--ink); }
+
+  .avatar-wrap{
+    position:absolute; left:50%; bottom:-40px; transform:translateX(-50%); z-index:6;
+  }
+  .avatar-ring{
+    width:96px; height:96px; border-radius:50%; background:#fff; padding:4px;
+    box-shadow:0 6px 16px rgba(0,0,0,0.18);
+  }
+  .avatar-ring .avatar-inner{
+    width:100%; height:100%; border-radius:50%; overflow:hidden;
+    background:linear-gradient(180deg,var(--sky-top),var(--ocean-1)); display:flex; align-items:center; justify-content:center;
+  }
+  .cam-badge{
+    position:absolute; right:2px; bottom:2px; width:28px; height:28px; border-radius:50%;
+    background:#fff; box-shadow:0 3px 8px rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center;
+  }
+
+  .profile-content{ padding:52px 16px 90px; }
+  .profile-name{ text-align:center; }
+  .profile-name h2{ margin:0; font-family:'Baloo 2',sans-serif; font-size:20px; color:var(--ink); }
+  .profile-name p{ margin:2px 0 0; font-size:13px; color:var(--ink-soft); font-weight:700; }
+
+  .stats-card{
+    margin-top:18px; background:linear-gradient(135deg,var(--ocean-1),var(--ocean-deep));
+    border-radius:18px; padding:16px; color:#fff; box-shadow:var(--card-shadow);
+  }
+  .stats-card .stats-top{ display:flex; align-items:center; justify-content:space-between; font-size:13px; font-weight:800; opacity:.9; }
+  .stats-grid{ margin-top:12px; display:grid; grid-template-columns:repeat(3,1fr); text-align:center; }
+  .stats-grid div{ border-right:1px solid rgba(255,255,255,0.25); }
+  .stats-grid div:last-child{ border-right:none; }
+  .stats-grid b{ display:block; font-family:'Baloo 2',sans-serif; font-size:18px; }
+  .stats-grid span{ font-size:11px; font-weight:700; opacity:.85; }
+
+  .menu-list{ margin-top:18px; background:#fff; border-radius:18px; box-shadow:var(--card-shadow); overflow:hidden; }
+  .menu-row{
+    display:flex; align-items:center; gap:12px; padding:14px 16px;
+    border-bottom:1px solid #F0EAD9; cursor:pointer; background:none; border-left:none; border-right:none; border-top:none;
+    width:100%; text-align:left; font-family:'Nunito',sans-serif;
+  }
+  .menu-row:last-child{ border-bottom:none; }
+  .menu-row .m-icon{
+    width:34px; height:34px; border-radius:50%; background:#F1ECDD; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .menu-row span{ flex:1; font-weight:700; font-size:14px; color:var(--ink); }
+
+  /* ---- Bottom tab bar ---- */
+  .tabbar{
+    display:flex; align-items:center; justify-content:space-around;
+    background:#fff; border-top:1px solid #EFE7D2; padding:10px 0 8px;
+    box-shadow: 0 -4px 14px rgba(0,0,0,0.05);
+  }
+  .tab-btn{
+    background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px;
+    color:#A9A093; padding:2px 10px;
+  }
+  .tab-btn.active{ color:var(--ocean-deep); }
+
+  /* ---- Toast ---- */
+  #toast{
+    position:absolute; left:50%; bottom:84px; transform:translateX(-50%) translateY(20px);
+    background:var(--shell-brown-dark); color:#fff; font-weight:700; font-size:13px;
+    padding:10px 18px; border-radius:30px; opacity:0; transition:opacity .25s ease, transform .25s ease;
+    pointer-events:none; z-index:50; white-space:nowrap;
+  }
+  #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
-<div id="app">
+<div id="root">
 
-  <!-- LOADING -->
+  <!-- ============ LOADING ============ -->
   <div id="loading">
-    <svg class="mascot" width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <line x1="64" y1="10" x2="64" y2="24" stroke="#2A4F4D" stroke-width="4" stroke-linecap="round"/>
-      <circle class="antenna-dot" cx="64" cy="8" r="6" fill="var(--coral)"/>
-      <rect x="18" y="24" width="92" height="86" rx="30" fill="#FBF6EC" stroke="#2A4F4D" stroke-width="4"/>
-      <rect x="30" y="54" width="30" height="20" rx="8" fill="#2A4F4D"/>
-      <rect x="68" y="54" width="30" height="20" rx="8" fill="#2A4F4D"/>
-      <line x1="60" y1="64" x2="68" y2="64" stroke="#2A4F4D" stroke-width="4"/>
-      <path d="M50 88 Q64 98 78 88" stroke="#2A4F4D" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <svg class="cloud" style="left:12%; top:8%;" width="46" height="20" viewBox="0 0 46 20"><ellipse cx="14" cy="12" rx="14" ry="8" fill="#fff" opacity=".85"/><ellipse cx="28" cy="8" rx="12" ry="8" fill="#fff" opacity=".85"/></svg>
+    <svg class="cloud" style="right:14%; top:6%;" width="38" height="18" viewBox="0 0 38 18"><ellipse cx="12" cy="10" rx="12" ry="7" fill="#fff" opacity=".8"/><ellipse cx="24" cy="7" rx="10" ry="7" fill="#fff" opacity=".8"/></svg>
+    <svg class="bird" style="left:30%; top:14%;" width="18" height="10" viewBox="0 0 18 10"><path d="M0 5 Q4 0 9 5 Q14 0 18 5" stroke="#3B2415" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+    <svg class="bird" style="left:60%; top:10%; animation-duration:12s;" width="14" height="8" viewBox="0 0 18 10"><path d="M0 5 Q4 0 9 5 Q14 0 18 5" stroke="#3B2415" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+
+    <svg class="palm-corner left" width="120" height="150" viewBox="0 0 120 150">
+      <g class="palm-sway">
+        <path d="M64 150 C 60 100, 70 60, 60 20" stroke="#4A2C17" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <path d="M60 24 C 30 4, 6 8, -6 26 C 20 20, 42 22, 60 30 Z" fill="#2E9E63"/>
+        <path d="M60 22 C 40 -6, 14 -10, -2 4 C 22 4, 46 12, 60 26 Z" fill="#1F7A4B"/>
+        <path d="M60 24 C 78 -2, 104 -4, 118 12 C 94 10, 72 18, 60 28 Z" fill="#2E9E63"/>
+        <path d="M60 22 C 88 6, 112 12, 122 30 C 98 24, 76 26, 60 30 Z" fill="#1F7A4B"/>
+        <path d="M60 26 C 46 46, 46 66, 58 84 C 60 62, 62 44, 66 26 Z" fill="#1F7A4B"/>
+      </g>
+    </svg>
+    <svg class="palm-corner right" width="120" height="150" viewBox="0 0 120 150">
+      <g class="palm-sway">
+        <path d="M64 150 C 60 100, 70 60, 60 20" stroke="#4A2C17" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <path d="M60 24 C 30 4, 6 8, -6 26 C 20 20, 42 22, 60 30 Z" fill="#2E9E63"/>
+        <path d="M60 22 C 40 -6, 14 -10, -2 4 C 22 4, 46 12, 60 26 Z" fill="#1F7A4B"/>
+        <path d="M60 24 C 78 -2, 104 -4, 118 12 C 94 10, 72 18, 60 28 Z" fill="#2E9E63"/>
+        <path d="M60 22 C 88 6, 112 12, 122 30 C 98 24, 76 26, 60 30 Z" fill="#1F7A4B"/>
+        <path d="M60 26 C 46 46, 46 66, 58 84 C 60 62, 62 44, 66 26 Z" fill="#1F7A4B"/>
+      </g>
     </svg>
 
-    <div class="title">GRID // HACK</div>
-    <div class="subtitle">connecting</div>
+    <svg class="mascot-hero" width="160" height="160" viewBox="0 0 200 200">
+      <use href="#conutMascot"/>
+    </svg>
 
-    <div class="wave-wrap">
-      <svg viewBox="0 0 180 34" width="180" height="34">
-        <path class="wave-path" d="M0 17 Q 15 2, 30 17 T 60 17 T 90 17 T 120 17 T 150 17 T 180 17" />
-      </svg>
+    <div class="brand">
+      <div class="brand-conut">CONUT</div>
+      <div class="brand-beach">BEACH</div>
     </div>
 
-    <div class="loading-label">Загрузка</div>
+    <svg class="wave-loader" viewBox="0 0 170 30"><path d="M0 15 Q 12 2, 24 15 T 48 15 T 72 15 T 96 15 T 120 15 T 144 15 T 170 15"/></svg>
+    <div class="loading-label">Loading</div>
+
+    <div class="shore">
+      <svg viewBox="0 0 400 140" preserveAspectRatio="none">
+        <path d="M0 40 Q 100 10 200 38 T 400 34 V140 H0 Z" fill="#EAF8FA" opacity=".55"/>
+        <path d="M0 58 Q 100 30 200 56 T 400 52 V140 H0 Z" fill="var(--sand)"/>
+        <ellipse cx="60" cy="112" rx="10" ry="5" fill="#E7D9B8"/>
+        <ellipse cx="330" cy="118" rx="14" ry="6" fill="#E7D9B8"/>
+      </svg>
+      <svg style="position:absolute; left:8%; bottom:14px;" width="26" height="26" viewBox="0 0 26 26"><path d="M13 1 L16 9 L24 9 L17.5 14 L20 22 L13 17 L6 22 L8.5 14 L2 9 L10 9 Z" fill="var(--coral)"/></svg>
+      <svg style="position:absolute; left:20%; bottom:8px;" width="20" height="20" viewBox="0 0 20 20"><path d="M10 1 L12.5 7 L19 7 L13.5 11 L15.5 18 L10 14 L4.5 18 L6.5 11 L1 7 L7.5 7 Z" fill="#F5B942"/></svg>
+      <svg style="position:absolute; right:14%; bottom:16px;" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2C7 2 3 8 3 13c0 5 4 9 9 9s9-4 9-9c0-5-4-11-9-11z" fill="#fff" stroke="var(--shell-brown)" stroke-width="1.4"/><path d="M12 5v16M8 8c1.5 1 2.5 2.5 4 3M16 8c-1.5 1-2.5 2.5-4 3M7 13c1.5 .6 3 1 5 1M17 13c-1.5 .6-3 1-5 1" stroke="var(--shell-brown)" stroke-width="1"/></svg>
+      <svg style="position:absolute; right:30%; bottom:6px;" width="16" height="16" viewBox="0 0 16 16"><path d="M8 1C4 1 1 6 1 9c0 4 3 6 7 6s7-2 7-6c0-3-3-8-7-8z" fill="#fff" opacity=".9"/></svg>
+    </div>
 
     <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
   </div>
 
-  <!-- MAIN -->
-  <div id="main">
-    <div class="hero">
-      <svg class="hero-mascot" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="18" y="24" width="92" height="86" rx="30" fill="#FBF6EC" stroke="#2A4F4D" stroke-width="4"/>
-        <rect x="30" y="54" width="30" height="20" rx="8" fill="#2A4F4D"/>
-        <rect x="68" y="54" width="30" height="20" rx="8" fill="#2A4F4D"/>
-        <line x1="60" y1="64" x2="68" y2="64" stroke="#2A4F4D" stroke-width="4"/>
-        <path d="M50 88 Q64 98 78 88" stroke="#2A4F4D" stroke-width="4" stroke-linecap="round" fill="none"/>
-      </svg>
-      <div class="hero-eyebrow">Grid // Hack</div>
-      <div class="hero-greeting" id="greeting">Привет!</div>
-      <div class="hero-date" id="dateLine"></div>
-    </div>
+  <!-- ============ APP ============ -->
+  <div id="app">
 
-    <div class="content">
-      <div class="card">
-        <div class="card-label">Факт дня</div>
-        <div class="fact-text" id="factText">Нажми кнопку, чтобы получить факт.</div>
-        <div class="fact-meta">
-          <span class="counter" id="counterLabel">Показано: 0</span>
+    <!-- ---- HOME ---- -->
+    <div class="screen active" id="screen-home">
+      <div class="scroll-area">
+        <div class="hero-band">
+          <svg class="hero-scene" viewBox="0 0 400 150" preserveAspectRatio="none">
+            <path d="M0 90 Q100 70 200 88 T400 82 V150 H0 Z" fill="var(--ocean-1)"/>
+            <ellipse cx="55" cy="95" rx="26" ry="10" fill="var(--sand)"/>
+            <ellipse cx="45" cy="90" rx="10" ry="6" fill="#2E9E63"/>
+            <ellipse cx="66" cy="88" rx="9" ry="6" fill="#1F7A4B"/>
+          </svg>
+          <svg style="position:absolute; right:6%; bottom:0;" width="90" height="130" viewBox="0 0 120 150">
+            <path d="M64 150 C 60 100, 70 60, 60 20" stroke="#4A2C17" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <path d="M60 24 C 30 4, 6 8, -6 26 C 20 20, 42 22, 60 30 Z" fill="#2E9E63"/>
+            <path d="M60 22 C 40 -6, 14 -10, -2 4 C 22 4, 46 12, 60 26 Z" fill="#1F7A4B"/>
+            <path d="M60 24 C 78 -2, 104 -4, 118 12 C 94 10, 72 18, 60 28 Z" fill="#2E9E63"/>
+          </svg>
+          <div class="hero-topbar">
+            <button class="icon-btn" id="menuBtn">
+              <svg width="16" height="12" viewBox="0 0 16 12"><path d="M0 1h16M0 6h16M0 11h16" stroke="var(--shell-brown-dark)" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="logo-mark"><div class="logo-conut">CONUT</div><div class="logo-beach">BEACH</div></div>
+            <button class="icon-btn" id="bellBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3c-3 0-5 2.2-5 5.5V13l-1.6 2.6c-.3.5.1 1.2.7 1.2h11.8c.6 0 1-.7.7-1.2L16 13V8.5C16 5.2 14.9 3 12 3z" stroke="var(--shell-brown-dark)" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="19" r="1.6" fill="var(--shell-brown-dark)"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="home-content">
+          <div class="greet-card">
+            <div class="greet-text" style="flex:1;">
+              <h3 id="greetName">Hello, Beacher!</h3>
+              <p>Welcome to your beach paradise 🌴</p>
+            </div>
+            <svg class="mini-mascot" width="58" height="58" viewBox="0 0 200 200"><use href="#conutMascot"/></svg>
+          </div>
+
+          <div class="balance-card" id="balanceCard">
+            <div>
+              <div class="label">YOUR BALANCE</div>
+              <div class="amount"><span id="balanceValue">12,450</span> <svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="9" fill="var(--gold)"/><circle cx="9" cy="9" r="6.4" fill="none" stroke="#fff" stroke-width="1.4"/></circle></svg> <span class="unit">SAND</span></div>
+            </div>
+            <svg class="chev" width="9" height="15" viewBox="0 0 9 15"><path d="M1 1l6 6.5L1 14" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <div class="quick-row">
+            <button class="quick-item" id="bonusBtn">
+              <div class="quick-icon bonus"><svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="12" rx="2" fill="var(--leaf)"/><rect x="3" y="6" width="18" height="4" rx="1" fill="var(--leaf-dark)"/><rect x="11" y="6" width="2" height="15" fill="#fff" opacity=".7"/><path d="M12 6c-2-4-7-4-6-1 .5 1.5 3.5 1 6 1zM12 6c2-4 7-4 6-1-.5 1.5-3.5 1-6 1z" fill="var(--leaf-dark)"/></svg></div>
+              <span>Daily<br>Bonus</span>
+            </button>
+            <button class="quick-item" id="tasksBtn">
+              <div class="quick-icon tasks"><svg width="20" height="20" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2" fill="#5AA7E8"/><path d="M8 9h8M8 13h8M8 17h5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+              <span>Tasks</span>
+            </button>
+            <button class="quick-item" id="friendsBtn">
+              <div class="quick-icon friends"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.4" fill="var(--coral)"/><circle cx="16" cy="10" r="2.8" fill="var(--coral-dark)"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6" fill="var(--coral)"/><path d="M13 20c0-2.6 1.8-4.6 4-4.6 2.4 0 4.3 2 4.3 4.6" fill="var(--coral-dark)"/></svg></div>
+              <span>Friends</span>
+            </button>
+          </div>
+
+          <div class="reward-card">
+            <div class="reward-text">
+              <h4>Daily Reward</h4>
+              <p id="rewardHint">Come back tomorrow to get more!</p>
+            </div>
+            <svg width="52" height="52" viewBox="0 0 200 200"><use href="#conutMascotCalendar"/></svg>
+          </div>
+
+          <button class="claim-btn" id="claimBtn">Claim Tomorrow</button>
         </div>
       </div>
 
-      <div class="card">
-        <button class="btn" id="factBtn">Новый факт</button>
-        <div class="status-row">
-          <div class="status-chip">
-            <b id="localTime">--:--</b>
-            <span>Время</span>
+      <div class="tabbar">
+        <button class="tab-btn active" data-screen="screen-home">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" fill="currentColor"/></svg>
+        </button>
+        <button class="tab-btn" data-toast="Скоро!">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3c-4 3-6 7-6 10 0 3 2.5 5 6 5s6-2 6-5c0-3-2-7-6-10z" fill="currentColor"/></svg>
+        </button>
+        <button class="tab-btn" data-toast="Скоро!">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.6 6.6L21 9.2l-5 4.4L17.4 21 12 17.3 6.6 21 8 13.6 3 9.2l6.4-.6z" fill="currentColor"/></svg>
+        </button>
+        <button class="tab-btn" data-screen="screen-profile">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ---- PROFILE ---- -->
+    <div class="screen" id="screen-profile">
+      <div class="scroll-area">
+        <div class="profile-hero">
+          <svg style="position:absolute; left:-10%; bottom:0;" width="90" height="120" viewBox="0 0 120 150" opacity=".9">
+            <path d="M64 150 C 60 100, 70 60, 60 20" stroke="#4A2C17" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <path d="M60 24 C 30 4, 6 8, -6 26 C 20 20, 42 22, 60 30 Z" fill="#2E9E63"/>
+            <path d="M60 22 C 40 -6, 14 -10, -2 4 C 22 4, 46 12, 60 26 Z" fill="#1F7A4B"/>
+          </svg>
+          <svg style="position:absolute; right:-10%; bottom:0;" width="90" height="120" viewBox="0 0 120 150" opacity=".9">
+            <path d="M64 150 C 60 100, 70 60, 60 20" stroke="#4A2C17" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <path d="M60 24 C 78 -2, 104 -4, 118 12 C 94 10, 72 18, 60 28 Z" fill="#2E9E63"/>
+            <path d="M60 22 C 88 6, 112 12, 122 30 C 98 24, 76 26, 60 30 Z" fill="#1F7A4B"/>
+          </svg>
+          <div class="profile-topbar">
+            <button class="icon-btn" data-screen="screen-home">
+              <svg width="9" height="15" viewBox="0 0 9 15"><path d="M8 1L2 7.5 8 14" stroke="var(--shell-brown-dark)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div class="profile-title">Profile</div>
+            <button class="icon-btn" data-toast="Скоро!">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="var(--shell-brown-dark)" stroke-width="1.6"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4" stroke="var(--shell-brown-dark)" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </button>
           </div>
-          <div class="status-chip">
-            <b id="userLabel">Гость</b>
-            <span>Профиль</span>
+          <div class="avatar-wrap">
+            <div class="avatar-ring">
+              <div class="avatar-inner">
+                <svg width="70" height="70" viewBox="0 0 200 200"><use href="#conutMascot"/></svg>
+              </div>
+            </div>
+            <div class="cam-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 8h3l1.6-2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" stroke="var(--shell-brown-dark)" stroke-width="1.5"/><circle cx="12" cy="13" r="3.2" stroke="var(--shell-brown-dark)" stroke-width="1.5"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-content">
+          <div class="profile-name">
+            <h2>Beach Lover</h2>
+            <p>@beachlover</p>
+          </div>
+
+          <div class="stats-card">
+            <div class="stats-top"><span>Your Stats</span>
+              <svg width="8" height="13" viewBox="0 0 9 15"><path d="M1 1l6 6.5L1 14" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="stats-grid">
+              <div><b id="statPoints">1,250</b><span>Points</span></div>
+              <div><b id="statStreak">12</b><span>Day Streak</span></div>
+              <div><b id="statFriends">8</b><span>Friends</span></div>
+            </div>
+          </div>
+
+          <div class="menu-list">
+            <button class="menu-row" data-toast="Скоро!">
+              <div class="m-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="var(--shell-brown)" stroke-width="1.7"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" stroke="var(--shell-brown)" stroke-width="1.7"/></svg></div>
+              <span>Account</span>
+              <svg width="7" height="12" viewBox="0 0 9 15"><path d="M1 1l6 6.5L1 14" stroke="var(--ink-soft)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="menu-row" data-toast="Скоро!">
+              <div class="m-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3c-3 0-5 2.2-5 5.5V13l-1.6 2.6c-.3.5.1 1.2.7 1.2h11.8c.6 0 1-.7.7-1.2L16 13V8.5C16 5.2 14.9 3 12 3z" stroke="var(--shell-brown)" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="19" r="1.5" fill="var(--shell-brown)"/></svg></div>
+              <span>Notifications</span>
+              <svg width="7" height="12" viewBox="0 0 9 15"><path d="M1 1l6 6.5L1 14" stroke="var(--ink-soft)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="menu-row" data-toast="Скоро!">
+              <div class="m-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 13a8 8 0 0 1 16 0" stroke="var(--shell-brown)" stroke-width="1.6"/><rect x="2.5" y="13" width="4" height="6" rx="1.5" fill="var(--shell-brown)"/><rect x="17.5" y="13" width="4" height="6" rx="1.5" fill="var(--shell-brown)"/></svg></div>
+              <span>Support</span>
+              <svg width="7" height="12" viewBox="0 0 9 15"><path d="M1 1l6 6.5L1 14" stroke="var(--ink-soft)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button class="menu-row" data-toast="Conut Beach v1.0">
+              <div class="m-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="var(--shell-brown)" stroke-width="1.6"/><path d="M12 11v6M12 7v.2" stroke="var(--shell-brown)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+              <span>About Conut Beach</span>
+              <svg width="7" height="12" viewBox="0 0 9 15"><path d="M1 1l6 6.5L1 14" stroke="var(--ink-soft)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
           </div>
         </div>
       </div>
 
-      <div class="footnote">GRID // HACK mini app</div>
+      <div class="tabbar">
+        <button class="tab-btn" data-screen="screen-home">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" fill="currentColor"/></svg>
+        </button>
+        <button class="tab-btn" data-toast="Скоро!">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3c-4 3-6 7-6 10 0 3 2.5 5 6 5s6-2 6-5c0-3-2-7-6-10z" fill="currentColor"/></svg>
+        </button>
+        <button class="tab-btn" data-toast="Скоро!">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.6 6.6L21 9.2l-5 4.4L17.4 21 12 17.3 6.6 21 8 13.6 3 9.2l6.4-.6z" fill="currentColor"/></svg>
+        </button>
+        <button class="tab-btn active" data-screen="screen-profile">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" fill="currentColor"/></svg>
+        </button>
+      </div>
     </div>
+
   </div>
 
+  <div id="toast"></div>
 </div>
+
+<!-- Reusable mascot symbols -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="conutMascot" viewBox="0 0 200 200">
+      <ellipse cx="100" cy="182" rx="52" ry="9" fill="rgba(0,0,0,0.12)"/>
+      <path d="M42 45 L58 20" stroke="#E8863B" stroke-width="7" stroke-linecap="round"/>
+      <path d="M42 45 L54 30 L60 42 L46 52 Z" fill="#fff" stroke="#E8863B" stroke-width="2"/>
+      <path d="M42 45 L30 40 L36 52 L48 54 Z" fill="var(--coral,#E8863B)" opacity=".9"/>
+      <circle cx="100" cy="112" r="72" fill="#F7EFDD" stroke="#3B2415" stroke-width="5"/>
+      <path d="M28 96 C 40 58 70 40 100 40 C 130 40 160 58 172 96 C 150 84 128 90 116 78 C 108 92 92 92 84 78 C 72 90 50 84 28 96 Z" fill="#7A4B27" stroke="#3B2415" stroke-width="5" stroke-linejoin="round"/>
+      <path d="M52 70 C 60 60 68 56 76 54 M92 48 C 96 56 98 64 96 72 M124 54 C 130 60 134 68 134 76" stroke="#5C3419" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <ellipse cx="100" cy="60" rx="8" ry="6" fill="#2C1810"/>
+      <rect x="96" y="30" width="7" height="30" rx="3" fill="#fff" stroke="#E8863B" stroke-width="2" transform="rotate(8 100 45)"/>
+      <ellipse cx="76" cy="118" rx="17" ry="13" fill="#3B2415"/>
+      <ellipse cx="124" cy="118" rx="17" ry="13" fill="#3B2415"/>
+      <ellipse cx="70" cy="112" rx="5" ry="3.4" fill="#fff" opacity=".7"/>
+      <ellipse cx="118" cy="112" rx="5" ry="3.4" fill="#fff" opacity=".7"/>
+      <rect x="93" y="115" width="14" height="5" rx="2.5" fill="#3B2415"/>
+      <path d="M78 148 Q100 162 122 148" stroke="#3B2415" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="62" cy="138" rx="8" ry="5" fill="#F2A6A6" opacity=".8"/>
+      <ellipse cx="138" cy="138" rx="8" ry="5" fill="#F2A6A6" opacity=".8"/>
+    </symbol>
+
+    <symbol id="conutMascotCalendar" viewBox="0 0 200 200">
+      <ellipse cx="100" cy="182" rx="50" ry="9" fill="rgba(0,0,0,0.10)"/>
+      <circle cx="86" cy="112" r="64" fill="#F7EFDD" stroke="#3B2415" stroke-width="5"/>
+      <path d="M22 96 C 34 60 62 42 86 42 C 112 42 138 60 150 96 C 130 84 110 90 98 78 C 90 92 76 92 68 78 C 58 90 40 84 22 96 Z" fill="#7A4B27" stroke="#3B2415" stroke-width="5"/>
+      <ellipse cx="62" cy="118" rx="15" ry="11.5" fill="#3B2415"/>
+      <ellipse cx="106" cy="118" rx="15" ry="11.5" fill="#3B2415"/>
+      <ellipse cx="57" cy="112" rx="4.4" ry="3" fill="#fff" opacity=".7"/>
+      <ellipse cx="101" cy="112" rx="4.4" ry="3" fill="#fff" opacity=".7"/>
+      <path d="M66 146 Q84 158 102 146" stroke="#3B2415" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+      <g transform="translate(118,96)">
+        <rect x="0" y="8" width="58" height="52" rx="8" fill="#fff" stroke="#3B2415" stroke-width="4"/>
+        <rect x="0" y="8" width="58" height="16" rx="8" fill="var(--coral,#E8863B)" stroke="#3B2415" stroke-width="4"/>
+        <line x1="14" y1="0" x2="14" y2="16" stroke="#3B2415" stroke-width="4" stroke-linecap="round"/>
+        <line x1="44" y1="0" x2="44" y2="16" stroke="#3B2415" stroke-width="4" stroke-linecap="round"/>
+        <path d="M14 42 L24 52 L44 32" stroke="#2E9E63" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
 
 <script>
 (function(){
   var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
   if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
 
-  // ---- Loading progress animation ----
+  /* ---------- loading progress ---------- */
   var fill = document.getElementById('progressFill');
   var pct = 0;
   var progressTimer = setInterval(function(){
-    pct += Math.random() * 18 + 6;
-    if (pct > 96) pct = 96;
-    fill.style.width = pct + '%';
-  }, 180);
+    pct += Math.random()*18+6;
+    if (pct>96) pct = 96;
+    fill.style.width = pct+'%';
+  }, 170);
 
   function finishLoading(){
     clearInterval(progressTimer);
-    fill.style.width = '100%';
+    fill.style.width='100%';
     setTimeout(function(){
       document.getElementById('loading').classList.add('hide');
-      document.getElementById('main').classList.add('show');
+      document.getElementById('app').classList.add('show');
     }, 350);
   }
-
-  var MIN_LOADING_MS = 1600;
-  var start = Date.now();
-  function whenReady(){
-    var elapsed = Date.now() - start;
-    var wait = Math.max(0, MIN_LOADING_MS - elapsed);
-    setTimeout(finishLoading, wait);
-  }
-  if (document.readyState === 'complete') whenReady();
+  var MIN_MS = 1700, start = Date.now();
+  function whenReady(){ setTimeout(finishLoading, Math.max(0, MIN_MS-(Date.now()-start))); }
+  if (document.readyState==='complete') whenReady();
   else window.addEventListener('load', whenReady);
 
-  // ---- Greeting / user info ----
-  var name = 'друг';
-  try {
+  /* ---------- greeting name ---------- */
+  try{
     var u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
-    if (u && u.first_name) {
-      name = u.first_name;
-      document.getElementById('userLabel').textContent = u.first_name;
-    }
-  } catch(e){}
-  document.getElementById('greeting').textContent = 'Привет, ' + name + '!';
+    if (u && u.first_name){ document.getElementById('greetName').textContent = 'Hello, '+u.first_name+'!'; }
+  }catch(e){}
 
-  var dateFmt = new Intl.DateTimeFormat('ru-RU', { day:'numeric', month:'long', weekday:'long' });
-  document.getElementById('dateLine').textContent = dateFmt.format(new Date());
-
-  function tickClock(){
-    var t = new Date();
-    var hh = String(t.getHours()).padStart(2,'0');
-    var mm = String(t.getMinutes()).padStart(2,'0');
-    document.getElementById('localTime').textContent = hh + ':' + mm;
+  /* ---------- screen switching ---------- */
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('active', s.id===id); });
+    document.querySelectorAll('.tab-btn[data-screen]').forEach(function(b){});
+    document.querySelectorAll('.tab-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.screen===id);
+    });
   }
-  tickClock();
-  setInterval(tickClock, 15000);
-
-  // ---- Random fact functionality ----
-  var shownCount = 0;
-  try { shownCount = parseInt(localStorage.getItem('gh_fact_count') || '0', 10) || 0; } catch(e){}
-  document.getElementById('counterLabel').textContent = 'Показано: ' + shownCount;
-
-  var fallbackFacts = [
-    'Первый компьютерный «баг» был в буквальном смысле мотыльком, застрявшим в реле.',
-    'Пароль «123456» до сих пор входит в топ самых популярных в мире.',
-    'Клавиатура QWERTY была придумана, чтобы печатные машинки не заедали.',
-    'Первый домен в интернете был зарегистрирован в 1985 году.',
-    'Слово «robot» происходит от чешского слова «robota» — подневольный труд.'
-  ];
-  var fallbackIndex = 0;
-
-  document.getElementById('factBtn').addEventListener('click', function(){
-    var btn = this;
-    btn.disabled = true;
-    fetch('/api/fact')
-      .then(function(r){ return r.json(); })
-      .then(function(data){
-        var text = (data && data.ok && data.fact) ? data.fact : nextFallback();
-        applyFact(text);
-      })
-      .catch(function(){ applyFact(nextFallback()); })
-      .finally(function(){ btn.disabled = false; });
+  document.querySelectorAll('[data-screen]').forEach(function(el){
+    el.addEventListener('click', function(){ showScreen(el.dataset.screen); });
   });
 
-  function nextFallback(){
-    var f = fallbackFacts[fallbackIndex % fallbackFacts.length];
-    fallbackIndex++;
-    return f;
+  /* ---------- toast ---------- */
+  var toastEl = document.getElementById('toast');
+  var toastTimer;
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1600);
   }
+  document.querySelectorAll('[data-toast]').forEach(function(el){
+    el.addEventListener('click', function(){ showToast(el.dataset.toast); });
+  });
 
-  function applyFact(text){
-    var el = document.getElementById('factText');
-    el.style.opacity = 0;
-    setTimeout(function(){
-      el.textContent = text;
-      el.style.opacity = 1;
-    }, 150);
-    shownCount++;
-    document.getElementById('counterLabel').textContent = 'Показано: ' + shownCount;
-    try { localStorage.setItem('gh_fact_count', String(shownCount)); } catch(e){}
+  /* ---------- balance / daily bonus (persisted with localStorage) ---------- */
+  var STORE_KEY = 'conut_beach_state_v1';
+  function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(STORE_KEY);
+      if (raw) return JSON.parse(raw);
+    }catch(e){}
+    return { balance: 12450, points: 1250, streak: 12, friends: 8, lastClaim: null };
   }
+  function saveState(st){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(st)); }catch(e){} }
+
+  var state = loadState();
+
+  function fmt(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+  function renderState(){
+    document.getElementById('balanceValue').textContent = fmt(state.balance);
+    document.getElementById('statPoints').textContent = fmt(state.points);
+    document.getElementById('statStreak').textContent = state.streak;
+    document.getElementById('statFriends').textContent = state.friends;
+
+    var claimBtn = document.getElementById('claimBtn');
+    var hint = document.getElementById('rewardHint');
+    if (state.lastClaim === todayStr()){
+      claimBtn.textContent = 'Claimed ✓';
+      claimBtn.classList.add('done');
+      hint.textContent = 'Come back tomorrow to get more!';
+    } else {
+      claimBtn.textContent = 'Claim Reward';
+      claimBtn.classList.remove('done');
+      hint.textContent = 'Your daily reward is ready!';
+    }
+  }
+  renderState();
+
+  document.getElementById('claimBtn').addEventListener('click', function(){
+    if (state.lastClaim === todayStr()){ showToast('Уже получено сегодня'); return; }
+    var reward = 50 + Math.floor(Math.random()*50);
+    state.balance += reward;
+    state.points += Math.round(reward/2);
+    state.streak += 1;
+    state.lastClaim = todayStr();
+    saveState(state);
+    renderState();
+    showToast('+'+reward+' SAND!');
+  });
+
+  document.getElementById('bonusBtn').addEventListener('click', function(){
+    document.getElementById('claimBtn').click();
+  });
+  document.getElementById('balanceCard').addEventListener('click', function(){
+    showToast('Баланс: '+fmt(state.balance)+' SAND');
+  });
 })();
 </script>
 </body>
