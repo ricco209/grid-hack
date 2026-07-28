@@ -384,6 +384,18 @@ button {
   background: linear-gradient(180deg, var(--ocean-light), var(--ocean-mid));
   color: #fff; font-weight: 800; font-size: 14.5px;
 }
+.ref-enter-card { background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); padding: 14px 16px; margin-bottom: 16px; }
+.ref-enter-label { font-size: 12.5px; font-weight: 800; color: var(--text-mute); margin-bottom: 8px; }
+.ref-enter-row { display: flex; gap: 8px; }
+.ref-code-input {
+  flex: 1; border: 2px solid var(--ocean-pale); border-radius: 14px; padding: 10px 12px;
+  font-family: inherit; font-weight: 800; font-size: 13.5px; color: var(--ocean-deep);
+  background: var(--cream); text-transform: uppercase; letter-spacing: 1px;
+}
+.ref-code-input:focus { outline: none; border-color: var(--ocean-mid); }
+.ref-enter-btn { background: var(--ocean-mid); color: #fff; font-weight: 800; font-size: 12.5px; padding: 0 16px; border-radius: 14px; flex-shrink: 0; }
+.ref-enter-btn:disabled { opacity: 0.6; }
+
 .friends-list { display: flex; flex-direction: column; gap: 10px; }
 .friend-row { display: flex; align-items: center; gap: 12px; background: var(--card); border-radius: var(--radius-md); padding: 12px 14px; box-shadow: var(--shadow-soft); }
 .friend-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--ocean-pale); display: flex; align-items: center; justify-content: center; font-weight: 800; color: var(--ocean-deep); flex-shrink: 0; }

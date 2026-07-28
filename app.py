@@ -139,6 +139,7 @@ def user_public(u):
         "joined_channel": bool(u["joined_channel"]),
         "chest_claimed_today": u["chest_claimed_date"] == db._today(),
         "referral_code": u["referral_code"],
+        "referred": u["referred_by"] is not None,
     }
 
 
@@ -233,6 +234,16 @@ def api_leaderboard():
     return jsonify({"ok": True, "scope": scope, "top": top, "me": me})
 
 
+@app.route("/api/referral/apply", methods=["POST"])
+def api_referral_apply():
+    u = current_user()
+    if not u:
+        return jsonify({"ok": False, "error": "unauthorized"}), 401
+    body = request.get_json(silent=True) or {}
+    result = db.set_referral(u["id"], body.get("code", ""))
+    return jsonify(result)
+
+
 @app.route("/api/friends")
 def api_friends():
     u = current_user()
@@ -240,7 +251,9 @@ def api_friends():
         return jsonify({"ok": False, "error": "unauthorized"}), 401
     friends = db.friends_of(u["id"])
     bot_username = os.environ.get("BOT_USERNAME", "")
-    link = f"https://t.me/{bot_username}?startapp=ref_{u['referral_code']}" if bot_username else ""
+    # /start (не startapp) — надёжно ловится обработчиком bot.py в любом боте,
+    # без зависимости от настройки Direct Link Mini App в BotFather.
+    link = f"https://t.me/{bot_username}?start=ref_{u['referral_code']}" if bot_username else ""
     return jsonify({
         "ok": True,
         "referral_code": u["referral_code"],

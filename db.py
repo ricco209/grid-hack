@@ -156,6 +156,32 @@ def get_or_create_user(user_id, username=None, first_name=None, referred_by=None
             conn.close()
 
 
+def set_referral(user_id, code):
+    """Ручной ввод реферального кода — для тех, кто открыл приложение не по ссылке."""
+    with _lock:
+        conn = get_conn()
+        try:
+            row = conn.execute("SELECT * FROM users WHERE id=?", (user_id,)).fetchone()
+            if not row:
+                return {"ok": False, "error": "user_not_found"}
+            if row["referred_by"] is not None:
+                return {"ok": False, "error": "already_set"}
+            code = (code or "").strip().upper()
+            ref = conn.execute("SELECT * FROM users WHERE referral_code=?", (code,)).fetchone()
+            if not ref or ref["id"] == user_id:
+                return {"ok": False, "error": "invalid_code"}
+            conn.execute("UPDATE users SET referred_by=? WHERE id=?", (ref["id"], user_id))
+            if not ref["invite_bonus_given"]:
+                conn.execute(
+                    "UPDATE users SET balance = balance + ?, invite_bonus_given = 1 WHERE id=?",
+                    (INVITE_REWARD, ref["id"]),
+                )
+            conn.commit()
+            return {"ok": True, "referrer_name": ref["first_name"] or ref["username"] or "Player"}
+        finally:
+            conn.close()
+
+
 def do_checkin(user_id):
     """Ежедневный сбор ракушек. Возвращает dict с результатом."""
     with _lock:

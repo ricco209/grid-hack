@@ -28,10 +28,11 @@
     return (n || 0).toLocaleString("en-US");
   }
 
-  function api(path, method) {
+  function api(path, method, body) {
     return fetch(path, {
       method: method || "GET",
       headers: { "X-Init-Data": INIT_DATA, "Content-Type": "application/json" },
+      body: body ? JSON.stringify(body) : undefined,
     }).then(function (r) { return r.json(); });
   }
 
@@ -119,6 +120,9 @@
       bonusState.textContent = "Claim";
       bonusState.classList.add("claimable");
     }
+
+    var refCard = document.getElementById("ref-enter-card");
+    if (refCard) refCard.style.display = u.referred ? "none" : "block";
 
     // задания
     setTaskState("join_channel", u.joined_channel, "Verify");
@@ -257,6 +261,25 @@
     } else {
       toast("Copy: " + text);
     }
+  });
+
+  document.getElementById("ref-code-btn").addEventListener("click", function () {
+    var input = document.getElementById("ref-code-input");
+    var code = (input.value || "").trim();
+    if (!code) { toast("Enter a code first"); return; }
+    api("/api/referral/apply", "POST", { code: code }).then(function (res) {
+      if (res.ok) {
+        toast("Code applied — " + res.referrer_name + " got their bonus! 🎉");
+        input.value = "";
+        refreshMe();
+      } else if (res.error === "already_set") {
+        toast("You already have a referrer.");
+      } else if (res.error === "invalid_code") {
+        toast("Invalid code — check and try again.");
+      } else {
+        toast("Something went wrong, try again.");
+      }
+    });
   });
 
   document.getElementById("share-link-btn").addEventListener("click", function () {
