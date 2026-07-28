@@ -2,672 +2,233 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Conut Beach</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>GRID // HACK — Beach</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --sky-top: #BFEAF4;
-    --sky-bottom: #6FD3DE;
-    --ocean-1: #3FBFC7;
-    --ocean-2: #2AA6AE;
-    --ocean-deep: #1C8F94;
-    --sand: #F5EDDC;
-    --sand-dark: #E7D9B8;
-    --shell-brown: #6B4226;
-    --shell-brown-dark: #4A2C17;
-    --coconut-cream: #F7EFDD;
-    --coral: #E8863B;
-    --coral-dark: #C96A26;
-    --gold: #F5B942;
-    --ink: #2E3A3A;
-    --ink-soft: #6B7A79;
-    --leaf: #2E9E63;
-    --leaf-dark: #1F7A4B;
-    --card-shadow: 0 8px 20px rgba(28,143,148,0.14);
-  }
-  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html,body{ margin:0; padding:0; height:100%; overflow:hidden; font-family:'Nunito',sans-serif; background:var(--sand); }
-  #root{ position:relative; width:100%; height:100vh; }
-
-  /* =================== LOADING SCREEN =================== */
-  #loading{
-    position:absolute; inset:0; overflow:hidden;
-    background:linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 42%, var(--ocean-1) 60%, var(--ocean-2) 100%);
-    transition:opacity .5s ease, visibility .5s ease;
-    z-index:20;
-  }
-  #loading.hide{ opacity:0; visibility:hidden; pointer-events:none; }
-
-  .cloud{ position:absolute; opacity:.8; }
-  .bird{ position:absolute; opacity:.55; animation: driftx 9s linear infinite; }
-  @keyframes driftx{ from{ transform:translateX(0);} to{ transform:translateX(-30px);} }
-
-  .palm-corner{ position:absolute; top:-8px; z-index:2; }
-  .palm-corner.left{ left:-18px; transform: scaleX(-1); }
-  .palm-corner.right{ right:-18px; }
-  .palm-sway{ animation: sway 4s ease-in-out infinite; transform-origin: 50% 92%; }
-  @keyframes sway{ 0%,100%{ transform:rotate(-2deg);} 50%{ transform:rotate(2deg);} }
-
-  .mascot-hero{
-    position:absolute; left:50%; top:36%; transform:translate(-50%,-50%);
-    animation: bob 2.6s ease-in-out infinite; z-index:5;
-  }
-  @keyframes bob{ 0%,100%{ transform:translate(-50%,-50%) rotate(-2deg);} 50%{ transform:translate(-50%,-46%) rotate(2deg);} }
-
-  .brand{
-    position:absolute; left:50%; top:56%; transform:translateX(-50%);
-    text-align:center; z-index:6; width:100%;
-  }
-  .brand-conut{
-    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:44px; color:#fff;
-    -webkit-text-stroke: 2px var(--shell-brown-dark);
-    text-shadow: 0 4px 0 var(--shell-brown-dark);
-    letter-spacing: 1px;
-  }
-  .brand-beach{
-    margin-top:-6px;
-    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:30px; color:var(--gold);
-    -webkit-text-stroke: 2px var(--shell-brown-dark);
-    text-shadow: 0 3px 0 var(--shell-brown-dark);
-    letter-spacing: 2px;
-  }
-
-  .wave-loader{ position:absolute; left:50%; top:68%; transform:translateX(-50%); width:170px; height:30px; z-index:6; }
-  .wave-loader path{
-    stroke:#fff; stroke-width:6; stroke-linecap:round; fill:none;
-    stroke-dasharray:130 380; animation: travel 1.3s linear infinite;
-  }
-  @keyframes travel{ from{ stroke-dashoffset:0;} to{ stroke-dashoffset:-510;} }
-
-  .loading-label{
-    position:absolute; left:50%; top:75%; transform:translateX(-50%);
-    font-weight:800; font-size:15px; color:#fff; z-index:6;
-    text-shadow: 0 2px 0 rgba(0,0,0,0.15);
-  }
-  .loading-label::after{ content:''; display:inline-block; width:1.1em; text-align:left; animation: dots 1.2s steps(4) infinite; }
-  @keyframes dots{ 0%{content:'';} 25%{content:'.';} 50%{content:'..';} 75%{content:'...';} }
-
-  .shore{ position:absolute; left:0; right:0; bottom:0; height:34%; z-index:4; }
-  .shore svg{ position:absolute; bottom:0; width:100%; height:100%; }
-
-  .progress-track{
-    position:absolute; left:50%; bottom:16px; transform:translateX(-50%); z-index:8;
-    width:130px; height:5px; border-radius:4px; background:rgba(255,255,255,0.35); overflow:hidden;
-  }
-  .progress-fill{ height:100%; width:0%; background:#fff; border-radius:4px; transition:width .25s ease; }
-
-  /* =================== APP SHELL =================== */
-  #app{
-    position:absolute; inset:0; display:flex; flex-direction:column;
-    background:var(--sand); opacity:0; transition:opacity .45s ease;
-  }
-  #app.show{ opacity:1; }
-
-  .screen{ display:none; flex-direction:column; flex:1; min-height:0; }
-  .screen.active{ display:flex; }
-  .scroll-area{ flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
-
-  /* ---- Home header / hero ---- */
-  .hero-band{
-    position:relative; height:150px; overflow:hidden;
-    background:linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 55%, var(--ocean-1) 100%);
-  }
-  .hero-topbar{
-    position:absolute; top:0; left:0; right:0; z-index:5;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:12px 16px 0;
-  }
-  .icon-btn{
-    width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,0.55);
-    display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;
-  }
-  .logo-mark{ text-align:center; line-height:1; }
-  .logo-conut{
-    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:17px; color:#fff;
-    -webkit-text-stroke: 1px var(--shell-brown-dark); letter-spacing:.5px;
-  }
-  .logo-beach{
-    font-family:'Baloo 2',sans-serif; font-weight:800; font-size:15px; color:var(--gold);
-    -webkit-text-stroke: 1px var(--shell-brown-dark); letter-spacing:1px; margin-top:-4px;
-  }
-
-  .hero-scene{ position:absolute; inset:0; }
-
-  /* ---- Home content ---- */
-  .home-content{ padding:0 16px 90px; margin-top:-34px; position:relative; z-index:6; }
-
-  .greet-card{
-    background:#fff; border-radius:20px; padding:16px; box-shadow:var(--card-shadow);
-    display:flex; align-items:center; gap:12px;
-  }
-  .greet-text h3{ margin:0; font-family:'Baloo 2',sans-serif; font-size:18px; color:var(--ink); }
-  .greet-text p{ margin:4px 0 0; font-size:13px; color:var(--ink-soft); font-weight:600; }
-  .mini-mascot{ flex-shrink:0; }
-
-  .balance-card{
-    margin-top:14px; background:linear-gradient(135deg,var(--ocean-1),var(--ocean-deep));
-    border-radius:18px; padding:16px 18px; color:#fff; box-shadow:var(--card-shadow);
-    display:flex; align-items:center; justify-content:space-between; cursor:pointer;
-  }
-  .balance-card .label{ font-size:12px; font-weight:700; opacity:.85; letter-spacing:.5px; }
-  .balance-card .amount{ margin-top:4px; font-family:'Baloo 2',sans-serif; font-size:24px; display:flex; align-items:center; gap:8px; }
-  .balance-card .amount span.unit{ font-size:13px; font-weight:700; opacity:.85; }
-  .chev{ opacity:.85; }
-
-  .quick-row{ margin-top:14px; display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-  .quick-item{
-    background:#fff; border-radius:16px; padding:12px 6px; text-align:center;
-    box-shadow:var(--card-shadow); border:none; cursor:pointer; font-family:'Nunito',sans-serif;
-  }
-  .quick-icon{
-    width:40px; height:40px; border-radius:50%; margin:0 auto 6px;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .quick-icon.bonus{ background:#E4F6E9; }
-  .quick-icon.tasks{ background:#E4F1FB; }
-  .quick-icon.friends{ background:#FBE7EA; }
-  .quick-item span{ font-size:12px; font-weight:800; color:var(--ink); }
-
-  .reward-card{
-    margin-top:14px; background:#fff; border-radius:20px; padding:16px; box-shadow:var(--card-shadow);
-    display:flex; align-items:center; gap:12px;
-  }
-  .reward-text{ flex:1; }
-  .reward-text h4{ margin:0; font-family:'Baloo 2',sans-serif; font-size:16px; color:var(--ink); }
-  .reward-text p{ margin:4px 0 0; font-size:12.5px; color:var(--ink-soft); font-weight:600; }
-
-  .claim-btn{
-    margin-top:14px; width:100%; border:none; border-radius:16px; padding:14px;
-    font-family:'Nunito',sans-serif; font-weight:800; font-size:15px; color:#fff; cursor:pointer;
-    background:linear-gradient(135deg,var(--ocean-1),var(--ocean-deep)); box-shadow:0 8px 16px rgba(28,143,148,0.30);
-    transition:transform .12s ease;
-  }
-  .claim-btn:active{ transform:scale(.97); }
-  .claim-btn.done{ background:#D9D2C1; color:#8b8272; box-shadow:none; cursor:default; }
-
-  /* ---- Profile screen ---- */
-  .profile-hero{
-    position:relative; height:170px; overflow:hidden;
-    background:linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 55%, var(--ocean-1) 100%);
-  }
-  .profile-topbar{
-    position:absolute; top:0; left:0; right:0; z-index:5;
-    display:flex; align-items:center; justify-content:space-between; padding:12px 16px 0;
-  }
-  .profile-title{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:17px; color:var(--ink); }
-
-  .avatar-wrap{
-    position:absolute; left:50%; bottom:-40px; transform:translateX(-50%); z-index:6;
-  }
-  .avatar-ring{
-    width:96px; height:96px; border-radius:50%; background:#fff; padding:4px;
-    box-shadow:0 6px 16px rgba(0,0,0,0.18);
-  }
-  .avatar-ring .avatar-inner{
-    width:100%; height:100%; border-radius:50%; overflow:hidden;
-    background:linear-gradient(180deg,var(--sky-top),var(--ocean-1)); display:flex; align-items:center; justify-content:center;
-  }
-  .cam-badge{
-    position:absolute; right:2px; bottom:2px; width:28px; height:28px; border-radius:50%;
-    background:#fff; box-shadow:0 3px 8px rgba(0,0,0,0.2); display:flex; align-items:center; justify-content:center;
-  }
-
-  .profile-content{ padding:52px 16px 90px; }
-  .profile-name{ text-align:center; }
-  .profile-name h2{ margin:0; font-family:'Baloo 2',sans-serif; font-size:20px; color:var(--ink); }
-  .profile-name p{ margin:2px 0 0; font-size:13px; color:var(--ink-soft); font-weight:700; }
-
-  .stats-card{
-    margin-top:18px; background:linear-gradient(135deg,var(--ocean-1),var(--ocean-deep));
-    border-radius:18px; padding:16px; color:#fff; box-shadow:var(--card-shadow);
-  }
-  .stats-card .stats-top{ display:flex; align-items:center; justify-content:space-between; font-size:13px; font-weight:800; opacity:.9; }
-  .stats-grid{ margin-top:12px; display:grid; grid-template-columns:repeat(3,1fr); text-align:center; }
-  .stats-grid div{ border-right:1px solid rgba(255,255,255,0.25); }
-  .stats-grid div:last-child{ border-right:none; }
-  .stats-grid b{ display:block; font-family:'Baloo 2',sans-serif; font-size:18px; }
-  .stats-grid span{ font-size:11px; font-weight:700; opacity:.85; }
-
-  .menu-list{ margin-top:18px; background:#fff; border-radius:18px; box-shadow:var(--card-shadow); overflow:hidden; }
-  .menu-row{
-    display:flex; align-items:center; gap:12px; padding:14px 16px;
-    border-bottom:1px solid #F0EAD9; cursor:pointer; background:none; border-left:none; border-right:none; border-top:none;
-    width:100%; text-align:left; font-family:'Nunito',sans-serif;
-  }
-  .menu-row:last-child{ border-bottom:none; }
-  .menu-row .m-icon{
-    width:34px; height:34px; border-radius:50%; background:#F1ECDD; display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  }
-  .menu-row span{ flex:1; font-weight:700; font-size:14px; color:var(--ink); }
-
-  /* ---- Bottom tab bar ---- */
-  .tabbar{
-    display:flex; align-items:center; justify-content:space-around;
-    background:#fff; border-top:1px solid #EFE7D2; padding:10px 0 8px;
-    box-shadow: 0 -4px 14px rgba(0,0,0,0.05);
-  }
-  .tab-btn{
-    background:none; border:none; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:3px;
-    color:#A9A093; padding:2px 10px;
-  }
-  .tab-btn.active{ color:var(--ocean-deep); }
-
-  /* ---- Toast ---- */
-  #toast{
-    position:absolute; left:50%; bottom:84px; transform:translateX(-50%) translateY(20px);
-    background:var(--shell-brown-dark); color:#fff; font-weight:700; font-size:13px;
-    padding:10px 18px; border-radius:30px; opacity:0; transition:opacity .25s ease, transform .25s ease;
-    pointer-events:none; z-index:50; white-space:nowrap;
-  }
-  #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
-</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-<div id="root">
 
-  <!-- ============ LOADING ============ -->
-  <div id="loading">
-    <svg class="cloud" style="left:12%; top:8%;" width="46" height="20" viewBox="0 0 46 20"><ellipse cx="14" cy="12" rx="14" ry="8" fill="#fff" opacity=".85"/><ellipse cx="28" cy="8" rx="12" ry="8" fill="#fff" opacity=".85"/></svg>
-    <svg class="cloud" style="right:14%; top:6%;" width="38" height="18" viewBox="0 0 38 18"><ellipse cx="12" cy="10" rx="12" ry="7" fill="#fff" opacity=".8"/><ellipse cx="24" cy="7" rx="10" ry="7" fill="#fff" opacity=".8"/></svg>
-    <svg class="bird" style="left:30%; top:14%;" width="18" height="10" viewBox="0 0 18 10"><path d="M0 5 Q4 0 9 5 Q14 0 18 5" stroke="#3B2415" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
-    <svg class="bird" style="left:60%; top:10%; animation-duration:12s;" width="14" height="8" viewBox="0 0 18 10"><path d="M0 5 Q4 0 9 5 Q14 0 18 5" stroke="#3B2415" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
-
-    <svg class="palm-corner left" width="120" height="150" viewBox="0 0 120 150">
-      <g class="palm-sway">
-        <path d="M64 150 C 60 100, 70 60, 60 20" stroke="#4A2C17" stroke-width="7" fill="none" stroke-linecap="round"/>
-        <path d="M60 24 C 30 4, 6 8, -6 26 C 20 20, 42 22, 60 30 Z" fill="#2E9E63"/>
-        <path d="M60 22 C 40 -6, 14 -10, -2 4 C 22 4, 46 12, 60 26 Z" fill="#1F7A4B"/>
-        <path d="M60 24 C 78 -2, 104 -4, 118 12 C 94 10, 72 18, 60 28 Z" fill="#2E9E63"/>
-        <path d="M60 22 C 88 6, 112 12, 122 30 C 98 24, 76 26, 60 30 Z" fill="#1F7A4B"/>
-        <path d="M60 26 C 46 46, 46 66, 58 84 C 60 62, 62 44, 66 26 Z" fill="#1F7A4B"/>
-      </g>
-    </svg>
-    <svg class="palm-corner right" width="120" height="150" viewBox="0 0 120 150">
-      <g class="palm-sway">
-        <path d="M64 150 C 60 100, 70 60, 60 20" stroke="#4A2C17" stroke-width="7" fill="none" stroke-linecap="round"/>
-        <path d="M60 24 C 30 4, 6 8, -6 26 C 20 20, 42 22, 60 30 Z" fill="#2E9E63"/>
-        <path d="M60 22 C 40 -6, 14 -10, -2 4 C 22 4, 46 12, 60 26 Z" fill="#1F7A4B"/>
-        <path d="M60 24 C 78 -2, 104 -4, 118 12 C 94 10, 72 18, 60 28 Z" fill="#2E9E63"/>
-        <path d="M60 22 C 88 6, 112 12, 122 30 C 98 24, 76 26, 60 30 Z" fill="#1F7A4B"/>
-        <path d="M60 26 C 46 46, 46 66, 58 84 C 60 62, 62 44, 66 26 Z" fill="#1F7A4B"/>
-      </g>
-    </svg>
-
-    <svg class="mascot-hero" width="160" height="160" viewBox="0 0 200 200">
-      <use href="#conutMascot"/>
-    </svg>
-
-    <div class="brand">
-      <div class="brand-conut">CONUT</div>
-      <div class="brand-beach">BEACH</div>
-    </div>
-
-    <svg class="wave-loader" viewBox="0 0 170 30"><path d="M0 15 Q 12 2, 24 15 T 48 15 T 72 15 T 96 15 T 120 15 T 144 15 T 170 15"/></svg>
-    <div class="loading-label">Loading</div>
-
-    <div class="shore">
-      <svg viewBox="0 0 400 140" preserveAspectRatio="none">
-        <path d="M0 40 Q 100 10 200 38 T 400 34 V140 H0 Z" fill="#EAF8FA" opacity=".55"/>
-        <path d="M0 58 Q 100 30 200 56 T 400 52 V140 H0 Z" fill="var(--sand)"/>
-        <ellipse cx="60" cy="112" rx="10" ry="5" fill="#E7D9B8"/>
-        <ellipse cx="330" cy="118" rx="14" ry="6" fill="#E7D9B8"/>
-      </svg>
-      <svg style="position:absolute; left:8%; bottom:14px;" width="26" height="26" viewBox="0 0 26 26"><path d="M13 1 L16 9 L24 9 L17.5 14 L20 22 L13 17 L6 22 L8.5 14 L2 9 L10 9 Z" fill="var(--coral)"/></svg>
-      <svg style="position:absolute; left:20%; bottom:8px;" width="20" height="20" viewBox="0 0 20 20"><path d="M10 1 L12.5 7 L19 7 L13.5 11 L15.5 18 L10 14 L4.5 18 L6.5 11 L1 7 L7.5 7 Z" fill="#F5B942"/></svg>
-      <svg style="position:absolute; right:14%; bottom:16px;" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2C7 2 3 8 3 13c0 5 4 9 9 9s9-4 9-9c0-5-4-11-9-11z" fill="#fff" stroke="var(--shell-brown)" stroke-width="1.4"/><path d="M12 5v16M8 8c1.5 1 2.5 2.5 4 3M16 8c-1.5 1-2.5 2.5-4 3M7 13c1.5 .6 3 1 5 1M17 13c-1.5 .6-3 1-5 1" stroke="var(--shell-brown)" stroke-width="1"/></svg>
-      <svg style="position:absolute; right:30%; bottom:6px;" width="16" height="16" viewBox="0 0 16 16"><path d="M8 1C4 1 1 6 1 9c0 4 3 6 7 6s7-2 7-6c0-3-3-8-7-8z" fill="#fff" opacity=".9"/></svg>
-    </div>
-
-    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-  </div>
-
-  <!-- ============ APP ============ -->
-  <div id="app">
-
-    <!-- ---- HOME ---- -->
-    <div class="screen active" id="screen-home">
-      <div class="scroll-area">
-        <div class="hero-band">
-          <svg class="hero-scene" viewBox="0 0 400 150" preserveAspectRatio="none">
-            <path d="M0 90 Q100 70 200 88 T400 82 V150 H0 Z" fill="var(--ocean-1)"/>
-            <ellipse cx="55" cy="95" rx="26" ry="10" fill="var(--sand)"/>
-            <ellipse cx="45" cy="90" rx="10" ry="6" fill="#2E9E63"/>
-            <ellipse cx="66" cy="88" rx="9" ry="6" fill="#1F7A4B"/>
-          </svg>
-          <svg style="position:absolute; right:6%; bottom:0;" width="90" height="130" viewBox="0 0 120 150">
-            <path d="M64 150 C 60 100, 70 60, 60 20" stroke="#4A2C17" stroke-width="7" fill="none" stroke-linecap="round"/>
-            <path d="M60 24 C 30 4, 6 8, -6 26 C 20 20, 42 22, 60 30 Z" fill="#2E9E63"/>
-            <path d="M60 22 C 40 -6, 14 -10, -2 4 C 22 4, 46 12, 60 26 Z" fill="#1F7A4B"/>
-            <path d="M60 24 C 78 -2, 104 -4, 118 12 C 94 10, 72 18, 60 28 Z" fill="#2E9E63"/>
-          </svg>
-          <div class="hero-topbar">
-            <button class="icon-btn" id="menuBtn">
-              <svg width="16" height="12" viewBox="0 0 16 12"><path d="M0 1h16M0 6h16M0 11h16" stroke="var(--shell-brown-dark)" stroke-width="2" stroke-linecap="round"/></svg>
-            </button>
-            <div class="logo-mark"><div class="logo-conut">CONUT</div><div class="logo-beach">BEACH</div></div>
-            <button class="icon-btn" id="bellBtn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3c-3 0-5 2.2-5 5.5V13l-1.6 2.6c-.3.5.1 1.2.7 1.2h11.8c.6 0 1-.7.7-1.2L16 13V8.5C16 5.2 14.9 3 12 3z" stroke="var(--shell-brown-dark)" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="19" r="1.6" fill="var(--shell-brown-dark)"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <div class="home-content">
-          <div class="greet-card">
-            <div class="greet-text" style="flex:1;">
-              <h3 id="greetName">Hello, Beacher!</h3>
-              <p>Welcome to your beach paradise 🌴</p>
-            </div>
-            <svg class="mini-mascot" width="58" height="58" viewBox="0 0 200 200"><use href="#conutMascot"/></svg>
-          </div>
-
-          <div class="balance-card" id="balanceCard">
-            <div>
-              <div class="label">YOUR BALANCE</div>
-              <div class="amount"><span id="balanceValue">12,450</span> <svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="9" fill="var(--gold)"/><circle cx="9" cy="9" r="6.4" fill="none" stroke="#fff" stroke-width="1.4"/></circle></svg> <span class="unit">SAND</span></div>
-            </div>
-            <svg class="chev" width="9" height="15" viewBox="0 0 9 15"><path d="M1 1l6 6.5L1 14" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-
-          <div class="quick-row">
-            <button class="quick-item" id="bonusBtn">
-              <div class="quick-icon bonus"><svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="12" rx="2" fill="var(--leaf)"/><rect x="3" y="6" width="18" height="4" rx="1" fill="var(--leaf-dark)"/><rect x="11" y="6" width="2" height="15" fill="#fff" opacity=".7"/><path d="M12 6c-2-4-7-4-6-1 .5 1.5 3.5 1 6 1zM12 6c2-4 7-4 6-1-.5 1.5-3.5 1-6 1z" fill="var(--leaf-dark)"/></svg></div>
-              <span>Daily<br>Bonus</span>
-            </button>
-            <button class="quick-item" id="tasksBtn">
-              <div class="quick-icon tasks"><svg width="20" height="20" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2" fill="#5AA7E8"/><path d="M8 9h8M8 13h8M8 17h5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-              <span>Tasks</span>
-            </button>
-            <button class="quick-item" id="friendsBtn">
-              <div class="quick-icon friends"><svg width="20" height="20" viewBox="0 0 24 24"><circle cx="9" cy="9" r="3.4" fill="var(--coral)"/><circle cx="16" cy="10" r="2.8" fill="var(--coral-dark)"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6" fill="var(--coral)"/><path d="M13 20c0-2.6 1.8-4.6 4-4.6 2.4 0 4.3 2 4.3 4.6" fill="var(--coral-dark)"/></svg></div>
-              <span>Friends</span>
-            </button>
-          </div>
-
-          <div class="reward-card">
-            <div class="reward-text">
-              <h4>Daily Reward</h4>
-              <p id="rewardHint">Come back tomorrow to get more!</p>
-            </div>
-            <svg width="52" height="52" viewBox="0 0 200 200"><use href="#conutMascotCalendar"/></svg>
-          </div>
-
-          <button class="claim-btn" id="claimBtn">Claim Tomorrow</button>
-        </div>
-      </div>
-
-      <div class="tabbar">
-        <button class="tab-btn active" data-screen="screen-home">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" fill="currentColor"/></svg>
-        </button>
-        <button class="tab-btn" data-toast="Скоро!">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3c-4 3-6 7-6 10 0 3 2.5 5 6 5s6-2 6-5c0-3-2-7-6-10z" fill="currentColor"/></svg>
-        </button>
-        <button class="tab-btn" data-toast="Скоро!">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.6 6.6L21 9.2l-5 4.4L17.4 21 12 17.3 6.6 21 8 13.6 3 9.2l6.4-.6z" fill="currentColor"/></svg>
-        </button>
-        <button class="tab-btn" data-screen="screen-profile">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" fill="currentColor"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- ---- PROFILE ---- -->
-    <div class="screen" id="screen-profile">
-      <div class="scroll-area">
-        <div class="profile-hero">
-          <svg style="position:absolute; left:-10%; bottom:0;" width="90" height="120" viewBox="0 0 120 150" opacity=".9">
-            <path d="M64 150 C 60 100, 70 60, 60 20" stroke="#4A2C17" stroke-width="6" fill="none" stroke-linecap="round"/>
-            <path d="M60 24 C 30 4, 6 8, -6 26 C 20 20, 42 22, 60 30 Z" fill="#2E9E63"/>
-            <path d="M60 22 C 40 -6, 14 -10, -2 4 C 22 4, 46 12, 60 26 Z" fill="#1F7A4B"/>
-          </svg>
-          <svg style="position:absolute; right:-10%; bottom:0;" width="90" height="120" viewBox="0 0 120 150" opacity=".9">
-            <path d="M64 150 C 60 100, 70 60, 60 20" stroke="#4A2C17" stroke-width="6" fill="none" stroke-linecap="round"/>
-            <path d="M60 24 C 78 -2, 104 -4, 118 12 C 94 10, 72 18, 60 28 Z" fill="#2E9E63"/>
-            <path d="M60 22 C 88 6, 112 12, 122 30 C 98 24, 76 26, 60 30 Z" fill="#1F7A4B"/>
-          </svg>
-          <div class="profile-topbar">
-            <button class="icon-btn" data-screen="screen-home">
-              <svg width="9" height="15" viewBox="0 0 9 15"><path d="M8 1L2 7.5 8 14" stroke="var(--shell-brown-dark)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <div class="profile-title">Profile</div>
-            <button class="icon-btn" data-toast="Скоро!">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="var(--shell-brown-dark)" stroke-width="1.6"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4" stroke="var(--shell-brown-dark)" stroke-width="1.6" stroke-linecap="round"/></svg>
-            </button>
-          </div>
-          <div class="avatar-wrap">
-            <div class="avatar-ring">
-              <div class="avatar-inner">
-                <svg width="70" height="70" viewBox="0 0 200 200"><use href="#conutMascot"/></svg>
-              </div>
-            </div>
-            <div class="cam-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 8h3l1.6-2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" stroke="var(--shell-brown-dark)" stroke-width="1.5"/><circle cx="12" cy="13" r="3.2" stroke="var(--shell-brown-dark)" stroke-width="1.5"/></svg>
-            </div>
-          </div>
-        </div>
-
-        <div class="profile-content">
-          <div class="profile-name">
-            <h2>Beach Lover</h2>
-            <p>@beachlover</p>
-          </div>
-
-          <div class="stats-card">
-            <div class="stats-top"><span>Your Stats</span>
-              <svg width="8" height="13" viewBox="0 0 9 15"><path d="M1 1l6 6.5L1 14" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-            <div class="stats-grid">
-              <div><b id="statPoints">1,250</b><span>Points</span></div>
-              <div><b id="statStreak">12</b><span>Day Streak</span></div>
-              <div><b id="statFriends">8</b><span>Friends</span></div>
-            </div>
-          </div>
-
-          <div class="menu-list">
-            <button class="menu-row" data-toast="Скоро!">
-              <div class="m-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="var(--shell-brown)" stroke-width="1.7"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" stroke="var(--shell-brown)" stroke-width="1.7"/></svg></div>
-              <span>Account</span>
-              <svg width="7" height="12" viewBox="0 0 9 15"><path d="M1 1l6 6.5L1 14" stroke="var(--ink-soft)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <button class="menu-row" data-toast="Скоро!">
-              <div class="m-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3c-3 0-5 2.2-5 5.5V13l-1.6 2.6c-.3.5.1 1.2.7 1.2h11.8c.6 0 1-.7.7-1.2L16 13V8.5C16 5.2 14.9 3 12 3z" stroke="var(--shell-brown)" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="19" r="1.5" fill="var(--shell-brown)"/></svg></div>
-              <span>Notifications</span>
-              <svg width="7" height="12" viewBox="0 0 9 15"><path d="M1 1l6 6.5L1 14" stroke="var(--ink-soft)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <button class="menu-row" data-toast="Скоро!">
-              <div class="m-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 13a8 8 0 0 1 16 0" stroke="var(--shell-brown)" stroke-width="1.6"/><rect x="2.5" y="13" width="4" height="6" rx="1.5" fill="var(--shell-brown)"/><rect x="17.5" y="13" width="4" height="6" rx="1.5" fill="var(--shell-brown)"/></svg></div>
-              <span>Support</span>
-              <svg width="7" height="12" viewBox="0 0 9 15"><path d="M1 1l6 6.5L1 14" stroke="var(--ink-soft)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <button class="menu-row" data-toast="Conut Beach v1.0">
-              <div class="m-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="var(--shell-brown)" stroke-width="1.6"/><path d="M12 11v6M12 7v.2" stroke="var(--shell-brown)" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-              <span>About Conut Beach</span>
-              <svg width="7" height="12" viewBox="0 0 9 15"><path d="M1 1l6 6.5L1 14" stroke="var(--ink-soft)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="tabbar">
-        <button class="tab-btn" data-screen="screen-home">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 11 12 4l8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z" fill="currentColor"/></svg>
-        </button>
-        <button class="tab-btn" data-toast="Скоро!">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3c-4 3-6 7-6 10 0 3 2.5 5 6 5s6-2 6-5c0-3-2-7-6-10z" fill="currentColor"/></svg>
-        </button>
-        <button class="tab-btn" data-toast="Скоро!">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.6 6.6L21 9.2l-5 4.4L17.4 21 12 17.3 6.6 21 8 13.6 3 9.2l6.4-.6z" fill="currentColor"/></svg>
-        </button>
-        <button class="tab-btn active" data-screen="screen-profile">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7" fill="currentColor"/></svg>
-        </button>
-      </div>
-    </div>
-
-  </div>
-
-  <div id="toast"></div>
+<!-- ===================== ФОН (общий для всего приложения) ===================== -->
+<div class="scene" aria-hidden="true">
+  <div class="sky"></div>
+  <div class="sun-glare"></div>
+  <div class="cloud cloud-a"></div>
+  <div class="cloud cloud-b"></div>
+  <div class="cloud cloud-c"></div>
+  <div class="palm palm-left"></div>
+  <div class="palm palm-right"></div>
+  <div class="sparkles"></div>
+  <svg class="waves waves-back" viewBox="0 0 1440 220" preserveAspectRatio="none"><path d="M0,80 C240,140 480,20 720,70 C960,120 1200,40 1440,90 L1440,220 L0,220 Z"/></svg>
+  <svg class="waves waves-mid" viewBox="0 0 1440 220" preserveAspectRatio="none"><path d="M0,110 C220,60 480,150 720,100 C980,50 1220,130 1440,90 L1440,220 L0,220 Z"/></svg>
+  <svg class="waves waves-front" viewBox="0 0 1440 220" preserveAspectRatio="none"><path d="M0,130 C260,180 460,90 720,130 C980,170 1200,100 1440,140 L1440,220 L0,220 Z"/></svg>
 </div>
 
-<!-- Reusable mascot symbols -->
-<svg width="0" height="0" style="position:absolute">
-  <defs>
-    <symbol id="conutMascot" viewBox="0 0 200 200">
-      <ellipse cx="100" cy="182" rx="52" ry="9" fill="rgba(0,0,0,0.12)"/>
-      <path d="M42 45 L58 20" stroke="#E8863B" stroke-width="7" stroke-linecap="round"/>
-      <path d="M42 45 L54 30 L60 42 L46 52 Z" fill="#fff" stroke="#E8863B" stroke-width="2"/>
-      <path d="M42 45 L30 40 L36 52 L48 54 Z" fill="var(--coral,#E8863B)" opacity=".9"/>
-      <circle cx="100" cy="112" r="72" fill="#F7EFDD" stroke="#3B2415" stroke-width="5"/>
-      <path d="M28 96 C 40 58 70 40 100 40 C 130 40 160 58 172 96 C 150 84 128 90 116 78 C 108 92 92 92 84 78 C 72 90 50 84 28 96 Z" fill="#7A4B27" stroke="#3B2415" stroke-width="5" stroke-linejoin="round"/>
-      <path d="M52 70 C 60 60 68 56 76 54 M92 48 C 96 56 98 64 96 72 M124 54 C 130 60 134 68 134 76" stroke="#5C3419" stroke-width="4" stroke-linecap="round" fill="none"/>
-      <ellipse cx="100" cy="60" rx="8" ry="6" fill="#2C1810"/>
-      <rect x="96" y="30" width="7" height="30" rx="3" fill="#fff" stroke="#E8863B" stroke-width="2" transform="rotate(8 100 45)"/>
-      <ellipse cx="76" cy="118" rx="17" ry="13" fill="#3B2415"/>
-      <ellipse cx="124" cy="118" rx="17" ry="13" fill="#3B2415"/>
-      <ellipse cx="70" cy="112" rx="5" ry="3.4" fill="#fff" opacity=".7"/>
-      <ellipse cx="118" cy="112" rx="5" ry="3.4" fill="#fff" opacity=".7"/>
-      <rect x="93" y="115" width="14" height="5" rx="2.5" fill="#3B2415"/>
-      <path d="M78 148 Q100 162 122 148" stroke="#3B2415" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <ellipse cx="62" cy="138" rx="8" ry="5" fill="#F2A6A6" opacity=".8"/>
-      <ellipse cx="138" cy="138" rx="8" ry="5" fill="#F2A6A6" opacity=".8"/>
-    </symbol>
+<!-- ===================== ЭКРАН ЗАГРУЗКИ ===================== -->
+<div id="loading-screen" class="loading-screen">
+  <div class="loading-inner">
+    <div class="coconut-wrap">
+      <svg class="coconut" viewBox="0 0 220 240" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="110" cy="222" rx="70" ry="10" fill="#0b4a4a" opacity="0.18"/>
+        <g class="coconut-bob">
+          <path d="M46 118c0-46 28-84 64-84s64 38 64 84-28 74-64 74-64-28-64-74z" fill="#5C3A21"/>
+          <path d="M52 118c0-42 25-78 58-78s58 36 58 78-25 68-58 68-58-26-58-68z" fill="#7A5230"/>
+          <path d="M62 120c0-36 20-66 48-66s48 30 48 66-20 58-48 58-48-22-48-58z" fill="#EFE3C8"/>
+          <circle cx="86" cy="80" r="5" fill="#5C3A21"/>
+          <circle cx="112" cy="72" r="5" fill="#5C3A21"/>
+          <circle cx="100" cy="94" r="5" fill="#5C3A21"/>
+          <path d="M96 60c-10-22-4-40 14-46" stroke="#2E7D6B" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path d="M114 58c4-24 20-38 40-38" stroke="#3AA98F" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <rect x="100" y="30" width="9" height="34" rx="4" fill="#EAB93E" transform="rotate(-8 100 30)"/>
+          <path d="M64 128c30 14 62 14 92 0" stroke="#B98A54" stroke-width="6" fill="none" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+    <h1 class="loading-logo">BEACH</h1>
+    <p class="loading-sub" id="loading-sub">Heading to the shore…</p>
+    <div class="loading-bar">
+      <div class="loading-bar-fill" id="loading-fill">
+        <svg class="loading-wave" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M0,10 C15,2 35,18 50,10 C65,2 85,18 100,10 C115,2 135,18 150,10 C165,2 185,18 200,10 L200,20 L0,20 Z"/></svg>
+      </div>
+    </div>
+    <p class="loading-pct" id="loading-pct">0%</p>
+  </div>
+</div>
 
-    <symbol id="conutMascotCalendar" viewBox="0 0 200 200">
-      <ellipse cx="100" cy="182" rx="50" ry="9" fill="rgba(0,0,0,0.10)"/>
-      <circle cx="86" cy="112" r="64" fill="#F7EFDD" stroke="#3B2415" stroke-width="5"/>
-      <path d="M22 96 C 34 60 62 42 86 42 C 112 42 138 60 150 96 C 130 84 110 90 98 78 C 90 92 76 92 68 78 C 58 90 40 84 22 96 Z" fill="#7A4B27" stroke="#3B2415" stroke-width="5"/>
-      <ellipse cx="62" cy="118" rx="15" ry="11.5" fill="#3B2415"/>
-      <ellipse cx="106" cy="118" rx="15" ry="11.5" fill="#3B2415"/>
-      <ellipse cx="57" cy="112" rx="4.4" ry="3" fill="#fff" opacity=".7"/>
-      <ellipse cx="101" cy="112" rx="4.4" ry="3" fill="#fff" opacity=".7"/>
-      <path d="M66 146 Q84 158 102 146" stroke="#3B2415" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-      <g transform="translate(118,96)">
-        <rect x="0" y="8" width="58" height="52" rx="8" fill="#fff" stroke="#3B2415" stroke-width="4"/>
-        <rect x="0" y="8" width="58" height="16" rx="8" fill="var(--coral,#E8863B)" stroke="#3B2415" stroke-width="4"/>
-        <line x1="14" y1="0" x2="14" y2="16" stroke="#3B2415" stroke-width="4" stroke-linecap="round"/>
-        <line x1="44" y1="0" x2="44" y2="16" stroke="#3B2415" stroke-width="4" stroke-linecap="round"/>
-        <path d="M14 42 L24 52 L44 32" stroke="#2E9E63" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      </g>
-    </symbol>
-  </defs>
-</svg>
+<!-- ===================== ПРИЛОЖЕНИЕ ===================== -->
+<div id="app" class="app hidden">
 
-<script>
-(function(){
-  var tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-  if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
+  <!-- ---- Экран: BEACH (главная) ---- -->
+  <section class="screen" id="screen-beach" data-screen="beach">
+    <header class="profile-bar">
+      <div class="avatar" id="avatar-initial">B</div>
+      <div class="profile-meta">
+        <div class="profile-name">
+          <span id="profile-username">@Beach_Traveler</span>
+          <svg class="badge-check" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#3AB6E0"/><path d="M6 10.5l2.5 2.5L14 7.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="profile-title">⭐ Beach Explorer</div>
+      </div>
+      <button class="menu-btn" aria-label="menu">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </header>
 
-  /* ---------- loading progress ---------- */
-  var fill = document.getElementById('progressFill');
-  var pct = 0;
-  var progressTimer = setInterval(function(){
-    pct += Math.random()*18+6;
-    if (pct>96) pct = 96;
-    fill.style.width = pct+'%';
-  }, 170);
+    <div class="balance-wrap">
+      <div class="balance-ring" id="balance-ring">
+        <svg class="ring-svg" viewBox="0 0 240 240">
+          <defs>
+            <clipPath id="ring-clip"><circle cx="120" cy="120" r="104"/></clipPath>
+            <linearGradient id="ring-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7BE0D6"/>
+              <stop offset="100%" stop-color="#0E9AA7"/>
+            </linearGradient>
+          </defs>
+          <circle cx="120" cy="120" r="104" class="ring-track"/>
+          <g clip-path="url(#ring-clip)">
+            <rect id="ring-water" x="0" y="120" width="240" height="120" fill="url(#ring-grad)"/>
+            <path id="ring-wave" d="M0,10 C20,0 40,20 60,10 C80,0 100,20 120,10 C140,0 160,20 180,10 C200,0 220,20 240,10 L240,40 L0,40 Z" fill="url(#ring-grad)"/>
+          </g>
+          <circle cx="120" cy="120" r="104" class="ring-outline"/>
+        </svg>
+        <div class="ring-content">
+          <span class="ring-icon">🐚</span>
+          <span class="ring-label">BEACH POINTS</span>
+          <span class="ring-value" id="balance-value">0</span>
+          <span class="ring-sand">🏖️ SAND</span>
+        </div>
+      </div>
+      <div class="rank-line">Your Rank <span id="rank-value">#—</span></div>
+    </div>
 
-  function finishLoading(){
-    clearInterval(progressTimer);
-    fill.style.width='100%';
-    setTimeout(function(){
-      document.getElementById('loading').classList.add('hide');
-      document.getElementById('app').classList.add('show');
-    }, 350);
-  }
-  var MIN_MS = 1700, start = Date.now();
-  function whenReady(){ setTimeout(finishLoading, Math.max(0, MIN_MS-(Date.now()-start))); }
-  if (document.readyState==='complete') whenReady();
-  else window.addEventListener('load', whenReady);
+    <button class="cta-shell-btn" id="btn-collect">
+      <span class="shell-icon">🐚</span> Collect Your Daily Shells
+    </button>
 
-  /* ---------- greeting name ---------- */
-  try{
-    var u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
-    if (u && u.first_name){ document.getElementById('greetName').textContent = 'Hello, '+u.first_name+'!'; }
-  }catch(e){}
+    <div class="bonus-card" id="bonus-card">
+      <div class="bonus-icon">🥥</div>
+      <div class="bonus-text">
+        <div class="bonus-title">Daily Shell Bonus</div>
+        <div class="bonus-sub">Collect daily shells and earn extra SAND!</div>
+      </div>
+      <div class="bonus-state" id="bonus-state">Claim</div>
+    </div>
+  </section>
 
-  /* ---------- screen switching ---------- */
-  function showScreen(id){
-    document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('active', s.id===id); });
-    document.querySelectorAll('.tab-btn[data-screen]').forEach(function(b){});
-    document.querySelectorAll('.tab-btn').forEach(function(b){
-      b.classList.toggle('active', b.dataset.screen===id);
-    });
-  }
-  document.querySelectorAll('[data-screen]').forEach(function(el){
-    el.addEventListener('click', function(){ showScreen(el.dataset.screen); });
-  });
+  <!-- ---- Экран: TASKS ---- -->
+  <section class="screen hidden" id="screen-tasks" data-screen="tasks">
+    <header class="section-head">
+      <h1>Daily Assignments</h1>
+      <p>Complete tasks and earn SAND!</p>
+    </header>
 
-  /* ---------- toast ---------- */
-  var toastEl = document.getElementById('toast');
-  var toastTimer;
-  function showToast(msg){
-    toastEl.textContent = msg;
-    toastEl.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1600);
-  }
-  document.querySelectorAll('[data-toast]').forEach(function(el){
-    el.addEventListener('click', function(){ showToast(el.dataset.toast); });
-  });
+    <div class="task-list" id="task-list">
+      <div class="task-row" data-task="join_channel">
+        <div class="task-icon icon-blue">✈️</div>
+        <div class="task-info">
+          <div class="task-title">Join the Channel</div>
+          <div class="task-sub">Join our official Telegram channel.</div>
+          <div class="task-reward">🐚 + 50,000 SAND</div>
+        </div>
+        <button class="task-btn" data-action="join_channel">Verify</button>
+      </div>
 
-  /* ---------- balance / daily bonus (persisted with localStorage) ---------- */
-  var STORE_KEY = 'conut_beach_state_v1';
-  function todayStr(){ var d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
-  function loadState(){
-    try{
-      var raw = localStorage.getItem(STORE_KEY);
-      if (raw) return JSON.parse(raw);
-    }catch(e){}
-    return { balance: 12450, points: 1250, streak: 12, friends: 8, lastClaim: null };
-  }
-  function saveState(st){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(st)); }catch(e){} }
+      <div class="task-row" data-task="checkin">
+        <div class="task-icon icon-teal">🗓️</div>
+        <div class="task-info">
+          <div class="task-title">Daily Check-in</div>
+          <div class="task-sub">Check in daily and keep your streak alive.</div>
+          <div class="task-reward">🐚 + 100,000 SAND</div>
+        </div>
+        <button class="task-btn" data-action="checkin">Collect</button>
+      </div>
 
-  var state = loadState();
+      <div class="task-row" data-task="invite">
+        <div class="task-icon icon-gold">👥</div>
+        <div class="task-info">
+          <div class="task-title">Invite Mates</div>
+          <div class="task-sub">Invite friends and earn together.</div>
+          <div class="task-reward">🐚 + 200,000 SAND</div>
+        </div>
+        <button class="task-btn" data-action="goto-friends">Invite</button>
+      </div>
+    </div>
 
-  function fmt(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+    <div class="chest-card" id="chest-card">
+      <div class="chest-icon">🧰</div>
+      <div class="chest-text">
+        <div class="chest-title">Complete all tasks and get extra</div>
+        <div class="chest-reward">+ 50,000 SAND</div>
+      </div>
+      <button class="chest-btn" id="chest-btn">Claim</button>
+    </div>
+  </section>
 
-  function renderState(){
-    document.getElementById('balanceValue').textContent = fmt(state.balance);
-    document.getElementById('statPoints').textContent = fmt(state.points);
-    document.getElementById('statStreak').textContent = state.streak;
-    document.getElementById('statFriends').textContent = state.friends;
+  <!-- ---- Экран: FRIENDS ---- -->
+  <section class="screen hidden" id="screen-friends" data-screen="friends">
+    <header class="section-head">
+      <h1>Invite Friends</h1>
+      <p>Earn 🐚 200,000 SAND for every friend who joins!</p>
+    </header>
 
-    var claimBtn = document.getElementById('claimBtn');
-    var hint = document.getElementById('rewardHint');
-    if (state.lastClaim === todayStr()){
-      claimBtn.textContent = 'Claimed ✓';
-      claimBtn.classList.add('done');
-      hint.textContent = 'Come back tomorrow to get more!';
-    } else {
-      claimBtn.textContent = 'Claim Reward';
-      claimBtn.classList.remove('done');
-      hint.textContent = 'Your daily reward is ready!';
-    }
-  }
-  renderState();
+    <div class="invite-card">
+      <div class="invite-code-label">Your invite link</div>
+      <div class="invite-link-row">
+        <span class="invite-link" id="invite-link">t.me/your_bot?startapp=ref_XXXXXXX</span>
+        <button class="copy-btn" id="copy-link-btn">Copy</button>
+      </div>
+      <button class="share-btn" id="share-link-btn">🐚 Share with friends</button>
+    </div>
 
-  document.getElementById('claimBtn').addEventListener('click', function(){
-    if (state.lastClaim === todayStr()){ showToast('Уже получено сегодня'); return; }
-    var reward = 50 + Math.floor(Math.random()*50);
-    state.balance += reward;
-    state.points += Math.round(reward/2);
-    state.streak += 1;
-    state.lastClaim = todayStr();
-    saveState(state);
-    renderState();
-    showToast('+'+reward+' SAND!');
-  });
+    <div class="friends-list" id="friends-list">
+      <div class="empty-state">No friends invited yet — share your link to start earning!</div>
+    </div>
+  </section>
 
-  document.getElementById('bonusBtn').addEventListener('click', function(){
-    document.getElementById('claimBtn').click();
-  });
-  document.getElementById('balanceCard').addEventListener('click', function(){
-    showToast('Баланс: '+fmt(state.balance)+' SAND');
-  });
-})();
-</script>
+  <!-- ---- Экран: ISLAND (лидерборд) ---- -->
+  <section class="screen hidden" id="screen-island" data-screen="island">
+    <header class="section-head">
+      <h1>Top Explorers</h1>
+      <p>The top Beach adventurers!</p>
+    </header>
+
+    <div class="lb-tabs">
+      <button class="lb-tab active" data-scope="global">Global</button>
+      <button class="lb-tab" data-scope="friends">Friends</button>
+      <button class="lb-tab" data-scope="island">Island</button>
+    </div>
+
+    <div class="lb-list" id="lb-list"></div>
+    <div class="lb-me" id="lb-me"></div>
+  </section>
+
+  <!-- ---- Нижняя навигация ---- -->
+  <nav class="bottom-nav">
+    <svg class="nav-wave" viewBox="0 0 400 24" preserveAspectRatio="none"><path d="M0,14 C60,0 100,24 160,12 C220,0 260,24 320,10 C350,4 380,10 400,8 L400,24 L0,24 Z"/></svg>
+    <button class="nav-btn active" data-nav="beach">
+      <svg viewBox="0 0 24 24"><path d="M3 20c3-4 7-4 9-2 3 2 6 1 9-2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="17" cy="6" r="3" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+      <span>Beach</span>
+    </button>
+    <button class="nav-btn" data-nav="tasks">
+      <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>Tasks</span>
+    </button>
+    <button class="nav-btn" data-nav="friends">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="17" cy="10" r="2.5" stroke="currentColor" stroke-width="2" fill="none"/><path d="M3 20c0-3.5 3-6 6-6s6 2.5 6 6M14.5 20c0-2.5 1.8-4.5 4-4.8" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      <span>Friends</span>
+    </button>
+    <button class="nav-btn" data-nav="island">
+      <svg viewBox="0 0 24 24"><path d="M4 18c3-6 6-9 8-9s5 3 8 9" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M2 18h20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 9V4M12 4l3 2-3 2" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Island</span>
+    </button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="/static/app.js"></script>
 </body>
 </html>
